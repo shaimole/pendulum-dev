@@ -1,0 +1,8 @@
+.character {
+  border-image-slice: 13 13 13 13;
+  border-image-width: 13px 13px 13px 13px;
+  border-image-outset: 13px 13px 13px 13px;
+  border-image-repeat: repeat repeat;
+  border-image-source: url("https://mdn.mozillademos.org/files/6013/border-image-4.png");
+  background-color: grey !important;
+}
