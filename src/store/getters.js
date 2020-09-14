@@ -1,34 +1,40 @@
 export default {
+  getCharacters: (state) => {
+    return state.characters
+  },
   getCharAttributes: (state) => {
-    return state.character[0].attributes
+    return state.character.attributes
   },
   getChar: (state) => {
-    return state.character[0]
+    return state.character
   },
   getCharName: (state) => {
-    return state.character[0].name
+    return state.character.name
   },
   getCharLevel: (state) => {
-    return state.character[0].level
+    return state.character.level
   },
   getRaces: (state) => {
     return state.races
   },
+  getClasses: (state) => {
+    return state.classes
+  },
   getAttributes: (state) => {
     const attribs = state.attributes
-    const charAttribs = state.character[0].attributes
+    const charAttribs = state.character.attributes
     for (let i = 0; i < attribs.length; i++) {
       attribs[i].value = charAttribs[attribs[i].id]
     }
     return attribs
   },
   getRace (state) {
-    return state.character[0].race
+    return state.character.race
   },
   getTotalAttributesCost (state) {
-    const race = state.character[0].race
+    const race = state.character.race
     const raceModifiers = state.races[race].attributes
-    const charAttribs = state.character[0].attributes
+    const charAttribs = state.character.attributes
     let total = 0
     for (const attrib in charAttribs) {
       let step = charAttribs[attrib]
@@ -52,42 +58,42 @@ export default {
   },
   getSkills (state) {
     const skills = state.skills
-    const attributes = state.character[0].attributes
+    const attributes = state.character.attributes
     return getStats(skills, attributes)
   },
   getAttackStats (state) {
     const skills = state.attackStats
-    const attributes = state.character[0].attributes
+    const attributes = state.character.attributes
     return getStats(skills, attributes)
   },
   getDefenseStats (state) {
     const skills = state.defenseStats
-    const attributes = state.character[0].attributes
+    const attributes = state.character.attributes
     return getStats(skills, attributes)
   },
   getCasterStats (state) {
     const skills = state.casterStats
-    const attributes = state.character[0].attributes
+    const attributes = state.character.attributes
     return getStats(skills, attributes)
   },
   getDamageStats (state) {
     const skills = state.damageStats
-    const attributes = state.character[0].attributes
+    const attributes = state.character.attributes
     return getStats(skills, attributes)
   },
   getExternalStats (state) {
     const skills = state.externalStats
-    const attributes = state.character[0].attributes
+    const attributes = state.character.attributes
     return getStats(skills, attributes)
   },
   getHpStats (state) {
     const skills = state.hpStats
-    const attributes = state.character[0].attributes
+    const attributes = state.character.attributes
     return getStats(skills, attributes)
   },
   getLimitStats (state) {
     const skills = state.limitStats
-    const attributes = state.character[0].attributes
+    const attributes = state.character.attributes
     return getStats(skills, attributes)
   }
 }

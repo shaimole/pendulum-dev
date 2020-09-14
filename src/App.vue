@@ -1,12 +1,29 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Character</router-link>
-    </div>
-    <router-view/>
+     <b-card-group deck>
+    <CharacterCard :isAdd="true"/>
+    <CharacterCard v-for="character in getCharacters" :key="character.name"
+    :character="character"
+    />
+  </b-card-group>
   </div>
 </template>
-
+<script>
+import { mapGetters } from 'vuex'
+export default {
+  name: 'Pendulum',
+  data () {
+    return {
+      getActive: false
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'getCharacters'
+    ])
+  }
+}
+</script>
 <style lang="scss">
 @import url('https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica&display=swap');
 #app {
@@ -14,18 +31,12 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #222431;
-  margin: 0 10%;
-  border:1px solid #ccc!important;
-  border-radius: 16px;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-  }
+  color: white;
+  background-color: rgb(24, 24, 24);
+  position: absolute;
+  width: 100%;
+  width: 100%;
+  top: 0;
+  bottom: 0;
 }
 </style>

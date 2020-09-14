@@ -6,7 +6,9 @@ import './components/_globals.js'
 import './assets/sass/index.sass'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-import BootstrapVue from 'bootstrap-vue'
+import { BootstrapVueIcons, BootstrapVue } from 'bootstrap-vue'
+
+Vue.use(BootstrapVueIcons)
 Vue.use(BootstrapVue)
 
 Vue.config.productionTip = false

@@ -7,5 +7,11 @@ export default {
   },
   resetAttributes: (context) => {
     context.commit('resetAttributes')
+  },
+  createNewCharacter: (context) => {
+    context.commit('createCharacter')
+  },
+  saveCharacter: (context) => {
+    context.commit('saveCharacter')
   }
 }

@@ -10,8 +10,12 @@ import damageStats from '@/data/damageStats'
 import externalStats from '@/data/externalsStats'
 import hpStats from '@/data/hpStats'
 import limitStats from '@/data/limitStats'
+import characters from '@/data/characters'
+import classes from '@/data/class'
+import newChar from '@/data/newChar'
 
 export default {
+  characters,
   character,
   races,
   attributes,
@@ -23,5 +27,7 @@ export default {
   damageStats,
   externalStats,
   hpStats,
-  limitStats
+  limitStats,
+  classes,
+  newChar
 }
