@@ -1,10 +1,10 @@
   <template>
-  <div>
-    <svg height="200" width="200">
+  <div class="pentagon-container">
+    <svg height="200" width="200" preserveAspectRatio="xMidYMin">
       <polygon :points="totalPoints"></polygon>
       <polygon class="stats" :points="points"></polygon>
+      <AxisLabel width="50" height="80" v-for="(stat, index) in stats" :key="stat.label" :index="index" :label="stat.id" :amount="stats.length" ></AxisLabel>
     </svg>
-    <AxisLabel v-for="(stat, index) in stats" :key="stat.label" :index="index" :label="stat.id" :amount="stats.length" ></AxisLabel>
   </div>
 </template>
 
@@ -33,7 +33,7 @@ export default {
   methods: {
     valueToPoint (value, index, total) {
       var x = 0
-      var y = -value * 0.8
+      var y = -value * 0.7
       var angle = Math.PI * 2 / total * index
       var cos = Math.cos(angle)
       var sin = Math.sin(angle)
@@ -49,24 +49,26 @@ export default {
 </script>
 
 <style scoped>
+.pentagon-container {
+  display: flex;
+    justify-content: center;
+margin: 1em;
+}
+
 polygon {
-    fill: lightgrey;
-    opacity: .75;
+  display: block;
+  margin: auto auto;
+  fill: lightgrey;
+  opacity: 1;
 }
 polygon.stats {
-    fill: #42b983;
-    opacity: .75;
+    fill: #86C232;
+    opacity: 1;
 }
 
 circle {
     fill: transparent;
     stroke: #999;
-}
-
-text {
-    font-family: Helvetica Neue, Arial, sans-serif;
-    font-size: 10px;
-    fill: #666;
 }
 
 label {

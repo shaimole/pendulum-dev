@@ -4,7 +4,7 @@
        <b-card v-b-modal.characterCreation v-if="isAdd"  @click="createNewCharacter" bg-variant="white" header="Neu" text-variant="dark" img-src="https://icon-library.com/images/unknown-person-icon/unknown-person-icon-27.jpg" img-center img-alt="Image" img-height="170" img-width="110">
       <NewCharacter/>
       </b-card>
-      <b-card v-else bg-variant="dark" :header="character.name" text-variant="white" img-src="http://www.blackwyrmlair.net/~chevar/Portraits/JPG/M0002L.jpg" img-center img-alt="Image" img-height="170" img-width="110">
+      <b-card  v-b-modal.characterSheet v-else :class="getClasses" @click="setCurrentCharacter(character)" bg-variant="dark" :header="character.name" text-variant="white" :img-src="getUrl()" img-center img-alt="Image" img-height="170" img-width="110">
       </b-card>
     </div>
   </div>
@@ -13,14 +13,32 @@
 import { mapActions } from 'vuex'
 export default {
   props: { character: Object, isAdd: Boolean },
+  computed: {
+    getClasses () {
+      const classes = []
+      if (this.character.gender === 'M') {
+        classes.push('male')
+      } else {
+        classes.push('female')
+      }
+      return classes
+    }
+  },
   methods: {
     ...mapActions([
-      'createNewCharacter'
-    ])
+      'createNewCharacter',
+      'setCurrentCharacter'
+    ]),
+    getUrl () {
+      return 'http://www.blackwyrmlair.net/~chevar/Portraits/JPG/' + this.character.gender + this.character.image + 'L.jpg'
+    }
   }
 }
 </script>
 <style scoped>
+.card {
+  border-color: #86C232;
+}
 .card-body {
   display: none;
 }
@@ -44,24 +62,26 @@ export default {
   width: fit-content;
   height: 10px;
   margin-left: 5em;
-  margin-right: 2em;
+  margin-right: -6em;
   margin-bottom: 200px;
   border-radius: 5px;
   cursor: pointer;
-  box-shadow: 0 10px 40px 2px rgba(0,0,0,0.4);
+  box-shadow: 0 10px 40px 2px rgba(0, 0, 0, 0.4);
   background: #000;
   transform-origin: center center 0px;
   transition: all 0.5s ease-out;
   animation-name: animate;
-  animation-duration: 3s;
+  animation-duration: 1.5s;
   animation-iteration-count: infinite;
-  transform: perspective(1000px) rotateX(35deg) rotateY(4deg) rotateZ(-30deg);
+  transform: perspective(1000px) rotateX(35deg) rotateY(4deg) rotateZ(-25deg);
   z-index: 1;
 }
 .characterCardContainer:hover {
   animation: unset;
   margin-top: 18vh;
-  transform: perspective(1000px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  scale: (5);
+  transform: perspective(1000px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1.5);
+  z-index: 2;
 }
 .characterCardContainer .cardContent {
   display: flex;
@@ -75,7 +95,7 @@ export default {
     margin-top: 20vh;
   }
   50% {
-    margin-top: 18vh;
+    margin-top: 19vh;
   }
   100% {
     margin-top: 20vh;
@@ -86,7 +106,7 @@ export default {
     margin-top: 20vh;
   }
   50% {
-    margin-top: 18vh;
+    margin-top: 19vh;
   }
   100% {
     margin-top: 20vh;
@@ -97,7 +117,7 @@ export default {
     margin-top: 20vh;
   }
   50% {
-    margin-top: 18vh;
+    margin-top: 19vh;
   }
   100% {
     margin-top: 20vh;
@@ -108,7 +128,7 @@ export default {
     margin-top: 20vh;
   }
   50% {
-    margin-top: 18vh;
+    margin-top: 19vh;
   }
   100% {
     margin-top: 20vh;

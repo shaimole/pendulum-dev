@@ -1,8 +1,8 @@
 <template>
-  <div>
-    <b-form-input id="Name" type="text" :value="randomName[0]"></b-form-input>
-    <b-button @click="getRandomName"><b-icon-dice6></b-icon-dice6></b-button>
-    <b-button id="nameSettings" @click="getRandomName"><b-icon-gear-fill></b-icon-gear-fill></b-button>
+  <div class="nameContainer">
+    <b-form-input id="Name" v-model="name" type="text" :value="getChar.name" @keydown="setName()"></b-form-input>
+    <b-button @click="getRandomName"><font-awesome-icon icon="dice" /></b-button>
+    <b-button id="nameSettings"><b-icon-gear-fill></b-icon-gear-fill></b-button>
     <b-popover id="settings" target="nameSettings" triggers="click" placement="top">
     <template v-slot:title>Names Herkunft</template>
     <b-form-select value=celat  v-model="selected" :options="options"></b-form-select>
@@ -11,7 +11,13 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 export default {
+  computed: {
+    ...mapGetters([
+      'getChar'
+    ])
+  },
   data () {
     return {
       inputs: [
@@ -56,36 +62,56 @@ export default {
         { value: 'th', text: 'Thai' },
         { value: 'vn', text: 'Viatnam' }
       ],
-      randomName: [],
-      selected: 'celat'
+      selected: 'celat',
+      name: ''
     }
-  },
-  mounted () {
-    this.getRandomName()
   },
   methods: {
     getRandomName () {
+      let gender = 'male'
+      if (this.getChar.gender === 'F') {
+        gender = 'female'
+      }
       const url =
-        'https://fakeid.now.sh/api/Gender/random/NameSet/' + this.selected + '/Country/fi'
+        'https://fakeid.now.sh/api/Gender/' + gender + '/NameSet/' + this.selected + '/Country/fi'
       fetch(url)
         .then((response) => response.json())
-        .then((contents) => (this.randomName = contents.data.Name.split(' ')))
+        .then((contents) => (
+          this.handleResponse(contents)
+        )
+        )
         .catch(() =>
           console.log('Can’t access ' + url + ' response. Blocked by browser?')
         )
+    },
+    ...mapActions([
+      'setCharValue'
+    ]),
+    setName () {
+      const key = 'name'
+      const value = this.name
+      this.setCharValue({ key, value })
+    },
+    handleResponse (contents) {
+      this.name = contents.data.Name.split(' ')[0]
+      this.setName()
     }
   }
 }
 </script>
 <style scoped>
+.nameContainer {
+  margin: 1em;
+  padding: 1em;
+}
 .form-control {
-  float: left;
-  width: 80%;
-  background-color:rgb(160, 160, 160);
+  display: inline-block;
+  width: 50%;
+  background-color:#222629;
   color: white;
 }
 button {
-  float: left;
+  display: inline-block;
   margin-left: 0.3em;
 }
 #settings >>> .popover-header {

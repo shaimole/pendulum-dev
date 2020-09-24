@@ -1,7 +1,11 @@
 export default
 {
   level: 1,
+  currentTp: 0,
+  currentLp: 0,
   title: '',
+  gender: '',
+  image: '0001',
   name: '',
   house: '',
   race: 'human',
@@ -17,5 +21,6 @@ export default
     WS: 10,
     IN: 10,
     CH: 10
-  }
+  },
+  traits: []
 }

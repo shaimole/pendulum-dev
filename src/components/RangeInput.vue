@@ -1,7 +1,12 @@
 <template>
   <div>
-    <b-form-input id="range-2" v-model="value" type="range" :min="min" :max="max" step="1">{{ value }}</b-form-input>
-    <div class="mt-2"> {{ value }}</div>
+    <b-form-input id="range-2"
+    v-model="cVal"
+    type="range"
+    :min="min"
+    :max="max"
+    @change="setter({key: 'age', value: cVal})"
+    step="1">{{ cVal }}</b-form-input>
   </div>
 </template>
 
@@ -9,12 +14,9 @@
 export default {
   props: {
     min: Number,
-    max: Number
-  },
-  data () {
-    return {
-      value: '18'
-    }
+    max: Number,
+    cVal: Number,
+    setter: Function
   }
 }
 </script>

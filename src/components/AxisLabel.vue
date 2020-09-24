@@ -1,7 +1,7 @@
 <template>
-  <div class='x'>
-    <div v-bind:style="style">{{ label }}</div>
-  </div>
+<g :transform="transform">
+    <text>{{ label }}</text>
+</g>
 </template>
 
 <script>
@@ -13,30 +13,19 @@ export default {
   },
   replace: true,
   computed: {
-    point: function () {
-      return this.valueToPoint(
-        +100,
-        1,
-        this.$parent.stats.length
-      )
-    },
-    style () {
-      return {
-        top: 4 + 1.3 * this.valueToPoint(100, this.index, this.amount).y + 'px',
-        left: 10 + 1.3 * this.valueToPoint(100, this.index, this.amount).x + 'px',
-        position: 'absolute'
-      }
+    transform () {
+      return 'translate(' + this.valueToPoint().x + ',' + this.valueToPoint().y + ')'
     }
   },
   methods: {
-    valueToPoint (value, index, total) {
+    valueToPoint () {
       var x = 0
-      var y = -value * 0.8
-      var angle = Math.PI * 2 / total * index
+      var y = -120 * 0.7
+      var angle = Math.PI * 2 / this.amount * this.index
       var cos = Math.cos(angle)
       var sin = Math.sin(angle)
-      var tx = x * cos - y * sin + 100
-      var ty = x * sin + y * cos + 100
+      var tx = x * cos - y * sin + 89
+      var ty = x * sin + y * cos + 105
       return {
         x: tx,
         y: ty
@@ -46,7 +35,7 @@ export default {
 }
 </script>
 <style scoped>
-.x {
-  font-size: 10px;
+text {
+  fill:white
 }
 </style>

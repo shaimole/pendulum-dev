@@ -1,11 +1,13 @@
 <template>
     <div>
         <b-carousel
-        id="carousel-1"
+        id="images"
         controls
+        v-model="slide"
         :interval="interval"
         img-width="110"
         img-height="170"
+        @sliding-end="setImage($event)"
         style="text-shadow: 1px 1px 2px #333;"
         >
             <b-carousel-slide v-for="id in charImages" v-bind:key="id">
@@ -23,7 +25,16 @@
     </div>
 </template>
 <script>
+import { mapGetters } from 'vuex'
 export default {
+  props: {
+    slide: Number
+  },
+  computed: {
+    ...mapGetters([
+      'getChar'
+    ])
+  },
   data: function () {
     return {
       charImages: [],
@@ -35,7 +46,7 @@ export default {
   },
   methods: {
     getImageUrl (id) {
-      return 'http://www.blackwyrmlair.net/~chevar/Portraits/JPG/M' + id + 'L.jpg'
+      return 'http://www.blackwyrmlair.net/~chevar/Portraits/JPG/' + this.getChar.gender + id + 'L.jpg'
     },
     initalizePortaitIds (N) {
       const ids = Array.apply(null, { length: N }).map(Number.call, Number)
@@ -49,12 +60,18 @@ export default {
         ids[i] = stringNumber
       }
       this.charImages = ids
+    },
+    setImage (index) {
+      this.getChar.image = this.charImages[index]
     }
   }
 }
 </script>
 <style scoped>
 .carousel {
+    display: inline-block;
     max-width: 110px;
+    border:solid;
+    border-color: #86C232;
 }
 </style>

@@ -1,0 +1,124 @@
+<template>
+        <div class="tree">
+    <ul>
+  <li>
+    <a href="#">Parent</a>
+    <ul>
+      <li>
+        <a href="#">Child</a>
+        <ul>
+            <li>
+                <a href="#">Grand Child</a>
+              </li>
+              <li>
+                <a href="#">Grand Child</a>
+              </li>
+              <li>
+                <a href="#">Grand Child</a>
+              </li>
+          <li>
+            <a href="#">Grand Child</a>
+            <ul>
+              <li>
+                <a href="#">Grand Child</a>
+                <ul>
+              <li>
+                <a href="#">Grand Child</a>
+              </li>
+            </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+        </div>
+</template>
+
+<style scoped>
+ .tree {
+ transform-origin: 50%;
+}
+ .tree ul {
+ position: relative;
+ padding: 1em 0;
+ white-space: nowrap;
+ margin: 0 auto;
+ text-align: center;
+}
+ .tree ul::after {
+ content: '';
+ display: table;
+ clear: both;
+}
+ .tree li {
+ display: inline-block;
+ vertical-align: top;
+ text-align: center;
+ list-style-type: none;
+ position: relative;
+ padding: 1em 0.5em 0 0.5em;
+}
+ .tree li::before, .tree li::after {
+ content: '';
+ position: absolute;
+ top: 0;
+ right: 50%;
+ border-top: 1px solid #ccc;
+ width: 50%;
+ height: 1em;
+}
+ .tree li::after {
+ right: auto;
+ left: 50%;
+ border-left: 1px solid #ccc;
+}
+ .tree li:only-child::after, .tree li:only-child::before {
+ display: none;
+}
+ .tree li:only-child {
+ padding-top: 0;
+}
+ .tree li:first-child::before, .tree li:last-child::after {
+ border: 0 none;
+}
+ .tree li:last-child::before {
+ border-right: 1px solid #ccc;
+ border-radius: 0 5px 0 0;
+}
+ .tree li:first-child::after {
+ border-radius: 5px 0 0 0;
+}
+ .tree ul ul::before {
+ content: '';
+ position: absolute;
+ top: 0;
+ left: 50%;
+ border-left: 1px solid #ccc;
+ width: 0;
+ height: 1em;
+}
+ .tree li a {
+ border: 1px solid #ccc;
+ padding: 0.5em 0.75em;
+ text-decoration: none;
+ display: inline-block;
+ border-radius: 5px;
+ color: white;
+ position: relative;
+ top: 1px;
+}
+.tree li a:hover  {
+      color: #fff;
+      border: 1px solid #86C232;
+}
+.tree li::before {
+     border-color: #86C232 !important;
+}
+.tree ul::before +  li a:hover {
+     border-color: #86C232 !important;
+}
+
+</style>

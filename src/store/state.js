@@ -13,6 +13,9 @@ import limitStats from '@/data/limitStats'
 import characters from '@/data/characters'
 import classes from '@/data/class'
 import newChar from '@/data/newChar'
+import positiveTraits from '@/data/traitsPositive'
+import neutralTraits from '@/data/traitsNeutral'
+import negativeTraits from '@/data/traitsNegative'
 
 export default {
   characters,
@@ -29,5 +32,8 @@ export default {
   hpStats,
   limitStats,
   classes,
-  newChar
+  newChar,
+  positiveTraits,
+  neutralTraits,
+  negativeTraits
 }

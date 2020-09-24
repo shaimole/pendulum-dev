@@ -6,8 +6,10 @@
     :character="character"
     />
   </b-card-group>
+  <CharacterSheet/>
   </div>
 </template>
+
 <script>
 import { mapGetters } from 'vuex'
 export default {
@@ -32,11 +34,29 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: white;
-  background-color: rgb(24, 24, 24);
+  background-color: #222629;
   position: absolute;
   width: 100%;
   width: 100%;
   top: 0;
   bottom: 0;
 }
+button {
+  background-color: #6B6E70;
+}
+.card-deck {
+  margin-top: 30px;
+  margin-right:0;
+  margin-left:0;
+}
+.border-one {
+  border-width: 25px 25px 25px 25px !important;
+  -moz-border-image: url('~@/assets/Rahmen.png') 27 27 27 27 repeat repeat !important;
+  -webkit-border-image: url('~@/assets/Rahmen.png') 27 27 27 27 repeat repeat !important;
+  -o-border-image: url('~@/assets/Rahmen.png') 27 27 27 27 repeat repeat !important;
+  border-image: url('~@/assets/Rahmen.png') 27 27 27 27 repeat repeat !important;
+  border-style:solid;
+  background-clip: unset !important;
+}
+
 </style>

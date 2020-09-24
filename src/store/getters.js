@@ -51,6 +51,28 @@ export default {
         total += state.pointbuy[step].cost
       } while (--step > 0)
     }
+
+    const charTraitNames = state.character.traits
+    for (const index in charTraitNames) {
+      const trait = state.positiveTraits.find(element => element.name === charTraitNames[index])
+      if (trait) {
+        total += trait.cost
+      }
+    }
+
+    for (const index in charTraitNames) {
+      const trait = state.neutralTraits.find(element => element.name === charTraitNames[index])
+      if (trait) {
+        total += trait.cost
+      }
+    }
+
+    for (const index in charTraitNames) {
+      const trait = state.negativeTraits.find(element => element.name === charTraitNames[index])
+      if (trait) {
+        total += trait.cost
+      }
+    }
     return total
   },
   getAttributeCosts (state) {
@@ -59,45 +81,113 @@ export default {
   getSkills (state) {
     const skills = state.skills
     const attributes = state.character.attributes
-    return getStats(skills, attributes)
+    return floorValues(alterStats(state, getStats(skills, attributes), 'skills'))
   },
   getAttackStats (state) {
     const skills = state.attackStats
     const attributes = state.character.attributes
-    return getStats(skills, attributes)
+    return floorValues(alterStats(state, getStats(skills, attributes), 'attack'))
   },
   getDefenseStats (state) {
     const skills = state.defenseStats
     const attributes = state.character.attributes
-    return getStats(skills, attributes)
+    return floorValues(alterStats(state, getStats(skills, attributes), 'defense'))
   },
   getCasterStats (state) {
     const skills = state.casterStats
     const attributes = state.character.attributes
-    return getStats(skills, attributes)
+    return floorValues(alterStats(state, getStats(skills, attributes), 'caster'))
   },
   getDamageStats (state) {
     const skills = state.damageStats
     const attributes = state.character.attributes
-    return getStats(skills, attributes)
+    return floorValues(alterStats(state, getStats(skills, attributes), 'damage'))
   },
   getExternalStats (state) {
     const skills = state.externalStats
     const attributes = state.character.attributes
-    return getStats(skills, attributes)
+    return floorValues(alterStats(state, getStats(skills, attributes), 'external'))
   },
   getHpStats (state) {
-    const skills = state.hpStats
+    let skills = []
+    if (state.character.class === 'warrior') {
+      skills = state.classes[0].hpStats
+    } else {
+      skills = state.hpStats
+    }
     const attributes = state.character.attributes
-    return getStats(skills, attributes)
+    let stats = getStats(skills, attributes)
+    stats = alterStats(state, stats, 'hp')
+    if (!stats.find(element => element.id === 'LPReg')) {
+      let lpReg =
+  [
+    {
+      id: 'LPReg',
+      index: 2,
+      label: 'Lebenspunkt-Regeneration',
+      value: stats[1].value * 0.05
+    }
+  ]
+      lpReg = alterStats(state, lpReg, 'hp')
+      stats.push(lpReg[0])
+    }
+
+    return floorValues(stats)
   },
   getLimitStats (state) {
     const skills = state.limitStats
     const attributes = state.character.attributes
-    return getStats(skills, attributes)
+    return floorValues(alterStats(state, getStats(skills, attributes)), 'limit')
+  },
+  checkName (state) {
+    if (!state.character.name) {
+      return false
+    }
+  },
+  getTraits (state) {
+    return {
+      positive: state.positiveTraits,
+      neutral: state.neutralTraits,
+      negative: state.negativeTraits
+    }
+  },
+  getCharTraits (state) {
+    const charTraits = {
+      positive: [],
+      neutral: [],
+      negative: []
+    }
+    const charTraitNames = state.character.traits
+    for (const index in charTraitNames) {
+      const trait = state.positiveTraits.find(element => element.name === charTraitNames[index])
+      if (trait) {
+        charTraits.positive.push(trait)
+      }
+    }
+
+    for (const index in charTraitNames) {
+      const trait = state.neutralTraits.find(element => element.name === charTraitNames[index])
+      if (trait) {
+        charTraits.neutral.push(trait)
+      }
+    }
+
+    for (const index in charTraitNames) {
+      const trait = state.negativeTraits.find(element => element.name === charTraitNames[index])
+      if (trait) {
+        charTraits.negative.push(trait)
+      }
+    }
+    return charTraits
+  },
+  getAttributePoints (state) {
+    const distanceToPoint = state.character.level % 3
+    return Math.floor((state.character.levelUps + distanceToPoint) / 3)
+  },
+  getNotes (state) {
+    return state.character.notes
   }
 }
-
 function getStats (skills, attributes) {
   let i = 0
   for (const skill in skills) {
@@ -114,9 +204,11 @@ function getStats (skills, attributes) {
   }
   return skills
 }
-
 function getValueForParts (parts, skills, skill, attributes) {
   let value = 0
+  if (!parts) {
+    return value
+  }
   for (let index = 0; index < parts.length; index++) {
     let valuepart = attributes[skills[skill].parts[index]]
     if (!skills[skill].multi) {
@@ -127,4 +219,56 @@ function getValueForParts (parts, skills, skill, attributes) {
     value += valuepart
   }
   return value
+}
+function alterStats (state, stats, type) {
+  for (const stat in stats) {
+    let mod = 0
+    let multi = 1
+    let mods = []
+    const passiveItems = state.character.inventory.find(element => element.name === 'Passives')
+    const itemsContainers = [state.character.equipped, passiveItems]
+    for (const index in itemsContainers) {
+      const modifiers = getItemStatModifiers(itemsContainers[index], stats[stat].id, type, mod, multi, mods)
+      mods = modifiers.mods
+      multi = modifiers.multi
+      mod = modifiers.mod
+    }
+    stats[stat].mods = mods
+    stats[stat].orgValue = Math.floor(stats[stat].value)
+    stats[stat].value += mod
+    stats[stat].value *= multi
+  }
+  return stats
+}
+
+function getItemStatModifiers (items, statId, type, mod, multi, mods) {
+  for (const item in items) {
+    if (!items[item]) {
+      continue
+    }
+    if (!items[item].modifiers) {
+      continue
+    }
+    if (!items[item].modifiers[type]) {
+      continue
+    }
+    if (!items[item].modifiers[type][statId]) {
+      continue
+    }
+    if (!items[item].modifiers[type][statId].active) {
+      continue
+    }
+    const modItem = items[item].modifiers[type][statId]
+    mod += modItem.mod
+    multi += modItem.multi
+    mods.push({ item: items[item].name, mod: modItem.mod, multi: modItem.multi })
+  }
+  return { mod: mod, multi: multi, mods: mods }
+}
+
+function floorValues (stats) {
+  for (const stat in stats) {
+    stats[stat].value = Math.floor(stats[stat].value)
+  }
+  return stats
 }

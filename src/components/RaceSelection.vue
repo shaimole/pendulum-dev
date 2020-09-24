@@ -3,20 +3,21 @@
         <b-carousel
         id="RaceSelection"
         controls
-        background="rgb(171, 171, 171)"
+        background="#222629"
         :interval="interval"
+        @sliding-end="changeRace($event)"
         >
-            <b-carousel-slide v-for="option in options"
-            v-bind:key="option.id"
-            img-blank
-            :caption="option.name"
-            >
-            </b-carousel-slide>
+          <b-carousel-slide v-for="(option, index) in options"
+          v-bind:key="option.id">
+            <template v-slot:img>
+              <InfoBox :data="options[index]"/>
+            </template>
+          </b-carousel-slide>
         </b-carousel>
     </div>
 </template>
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
   data () {
     return {
@@ -34,31 +35,33 @@ export default {
       'getCharAttributes',
       'getRace'
     ])
+  },
+  methods: {
+    changeRace (index) {
+      const race = Object.keys(this.getRaces)[index]
+      this.selected = race
+      this.resetAttributes()
+      this.changeAttributesForRace(race)
+      this.setRace(race)
+    },
+    changeAttributesForRace (race) {
+      const attributes = this.getRaces[race].attributes
+      for (var i in attributes) {
+        this.setAttribute(
+          {
+            attribute: i,
+            value: 10 + attributes[i]
+          }
+        )
+      }
+    },
+    ...mapActions([
+      'setAttribute',
+      'setRace',
+      'resetAttributes'
+    ])
   }
 }
 </script>
 <style scoped>
-.carousel {
-    max-width: 100%;
-    height: 40px;
-}
-.carousel >>> .carousel-inner {
-    position: absolute;
-    width: 100%;
-    overflow: hidden;
-    height: 40px;
-    color: #fff;
-
-}
-.carousel >>>  .carousel-caption {
-    position: absolute;
-    right: 15%;
-    bottom: 310px;
-    left: 15%;
-    z-index: 10;
-    padding-top: 0;
-    padding-bottom: 0;
-    color: white;
-    text-align: center;
-}
 </style>

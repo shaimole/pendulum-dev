@@ -15,13 +15,15 @@
     </b-tab>
     <b-tab title="Schadenswerte" active>
       <SkillListing :skills="getDamageStats"/>
-      hi
     </b-tab>
-    <b-tab title="Aktionen">
-      <p><Attributes/></p>
+    <b-tab title="Lebens- und Trefferpunkte" active>
+      <SkillListing :skills="getHpStats"/>
     </b-tab>
-    <b-tab title="Bäume">
-      <p>I'm the tab with the very, very long title</p>
+    <b-tab title="Begrenzungen" active>
+      <SkillListing :skills="getExternalStats"/>
+    </b-tab>
+    <b-tab title="Sonstiges" active>
+      <SkillListing :skills="getLimitStats"/>
     </b-tab>
   </b-tabs>
 </div>
@@ -36,13 +38,10 @@ export default {
       'getDefenseStats',
       'getSkills',
       'getAttackStats',
-      'getSkills',
-      'getDefenseStats',
       'getCasterStats',
       'getDamageStats',
-      'getExternalStats',
-      'getDefenseStats',
       'getHpStats',
+      'getExternalStats',
       'getLimitStats'
     ])
   }
