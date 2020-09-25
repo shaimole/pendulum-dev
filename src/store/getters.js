@@ -118,20 +118,22 @@ export default {
     const attributes = state.character.attributes
     let stats = getStats(skills, attributes)
     stats = alterStats(state, stats, 'hp')
-    if (!stats.find(element => element.id === 'LPReg')) {
-      let lpReg =
-  [
-    {
-      id: 'LPReg',
-      index: 2,
-      label: 'Lebenspunkt-Regeneration',
-      value: stats[1].value * 0.05
-    }
-  ]
-      lpReg = alterStats(state, lpReg, 'hp')
+    let lpReg =
+    [
+      {
+        id: 'LPReg',
+        index: 2,
+        label: 'Lebenspunkt-Regeneration',
+        value: stats[1].value * 0.05
+      }
+    ]
+    lpReg = alterStats(state, lpReg, 'hp')
+    const lpRegOld = stats.find(element => element.id === 'LPReg')
+    if (!lpRegOld) {
       stats.push(lpReg[0])
+    } else {
+      stats.splice(stats.indexOf(lpRegOld), 1, lpReg[0])
     }
-
     return floorValues(stats)
   },
   getLimitStats (state) {
@@ -186,7 +188,40 @@ export default {
   },
   getNotes (state) {
     return state.character.notes
+  },
+  getItem (state) {
+    return state.item
+  },
+  getAllConditions (state) {
+    return getConditions(state)
   }
+}
+function getConditions (state) {
+  const passiveItems = state.character.inventory.find(element => element.name === 'Passives').items
+  const itemsContainers = [state.character.equipped, passiveItems]
+  for (const index in itemsContainers) {
+    for (const index2 in itemsContainers[index]) {
+      const item = itemsContainers[index][index2]
+      if (!item) {
+        continue
+      }
+      if (item.condition && !state.conditions.find(element => element.id === item.condition)) {
+        state.conditions.push({ id: item.condition, active: false })
+      }
+    }
+  }
+  return state.conditions
+}
+
+function getActiveConditions (state) {
+  const conditions = getConditions(state)
+  const activeConditions = []
+  for (const index in conditions) {
+    if (conditions[index].active) {
+      activeConditions.push(conditions[index].id)
+    }
+  }
+  return activeConditions
 }
 function getStats (skills, attributes) {
   let i = 0
@@ -201,6 +236,7 @@ function getStats (skills, attributes) {
     skills[skill].index = i++
     skills[skill].value = value
     skills[skill].value += skills[skill].mod
+    skills[skill].orgValue = Math.floor(skills[skill].value)
   }
   return skills
 }
@@ -221,41 +257,47 @@ function getValueForParts (parts, skills, skill, attributes) {
   return value
 }
 function alterStats (state, stats, type) {
+  const conditions = getActiveConditions(state)
   for (const stat in stats) {
     let mod = 0
     let multi = 1
     let mods = []
-    const passiveItems = state.character.inventory.find(element => element.name === 'Passives')
+    const passiveItems = state.character.inventory.find(element => element.name === 'Passives').items
     const itemsContainers = [state.character.equipped, passiveItems]
+
     for (const index in itemsContainers) {
-      const modifiers = getItemStatModifiers(itemsContainers[index], stats[stat].id, type, mod, multi, mods)
+      const modifiers = getItemStatModifiers(itemsContainers[index], stats[stat].id, type, mod, multi, mods, conditions)
       mods = modifiers.mods
       multi = modifiers.multi
       mod = modifiers.mod
     }
     stats[stat].mods = mods
-    stats[stat].orgValue = Math.floor(stats[stat].value)
     stats[stat].value += mod
     stats[stat].value *= multi
   }
   return stats
 }
 
-function getItemStatModifiers (items, statId, type, mod, multi, mods) {
+function getItemStatModifiers (items, statId, type, mod, multi, mods, conditions) {
   for (const item in items) {
     if (!items[item]) {
+      continue
+    }
+    if (!items[item].active) {
       continue
     }
     if (!items[item].modifiers) {
       continue
     }
+    if (items[item].condition) {
+      if (!conditions.find(element => element === items[item].condition)) {
+        continue
+      }
+    }
     if (!items[item].modifiers[type]) {
       continue
     }
     if (!items[item].modifiers[type][statId]) {
-      continue
-    }
-    if (!items[item].modifiers[type][statId].active) {
       continue
     }
     const modItem = items[item].modifiers[type][statId]

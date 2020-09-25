@@ -53,7 +53,6 @@ export default {
     }
     for (const index in state.character.inventory) {
       if (state.character.inventory[index].name === inv.name) {
-        state.character.inventory[index] = inv
         return
       }
     }

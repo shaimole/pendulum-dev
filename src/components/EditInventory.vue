@@ -46,6 +46,14 @@ export default {
   props: {
     inventory: Object
   },
+  mounted () {
+    if (this.inventory) {
+      this.name = this.inventory.name
+      this.desc = this.inventory.desc
+      this.capacity = this.inventory.capacity
+      this.type = this.inventory.type
+    }
+  },
   methods: {
     ...mapActions([
       'addInventory'
@@ -54,7 +62,14 @@ export default {
       return this.inventory || this.getNewInventory
     },
     submit () {
-      this.addInventory({ name: this.name, desc: this.desc, capacity: this.capacity, type: this.type })
+      if (this.inventory) {
+        this.inventory.name = this.name
+        this.inventory.desc = this.desc
+        this.inventory.capacity = this.capacity
+        this.inventory.type = this.type
+      } else {
+        this.addInventory({ name: this.name, desc: this.desc, capacity: this.capacity, type: this.type })
+      }
     }
   }
 }

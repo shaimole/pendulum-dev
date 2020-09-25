@@ -2,8 +2,12 @@
     <b-modal modal-class="CC" id="characterSheet" size="xl"  content-class="border-one ccContent" centered hide-footer>
       <template v-slot:modal-header id="header">
         <b-row>
-          <b-col sm="6">
+          <b-col sm="5">
             {{getChar.name}}
+
+          </b-col>
+          <b-col sm="1">
+           <Conditions/>
           </b-col>
           <b-col sm= "2">
             {{getRaceName}}

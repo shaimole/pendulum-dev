@@ -20,41 +20,21 @@ export default [
     traits: ['Ablutomanie', 'Insomnie', 'Hydrargyophobie', 'Thanatophobie', 'Atronachkörper', 'Gesegnet', 'Bescheidenheit', 'Photophilie'],
     notes: 'Once upon a time',
     equipped: {
-      weapon:
-      {
-        name: 'Lifebuff',
-        desc: 'testitem',
-        class: 'spear',
-        slot: 'weapon',
-        size: 1,
-        modifiers: {
-          hp: {
-            TP: {
-              label: 'Trefferpunkte',
-              mod: 0,
-              multi: 0.05,
-              active: 1
-            },
-            LP: {
-              label: 'Lebenspunkte',
-              mod: 200,
-              multi: 0.05,
-              active: 1
-            },
-            LPReg: {
-              label: 'Lebenspunkt-Regeneration',
-              mod: 0,
-              multi: 1,
-              active: 1
-            }
-
-          }
-        }
-      },
+      Waffe: null,
       cloths: null,
-      cloak: null,
-      armor: null
+      Umhang: null,
+      Ruestung: null,
+      Schild: null,
+      Rucksack: null,
+      Schuhe: null,
+      Handschuhe: null
     },
+    talismans: [
+
+    ],
+    artifacts: [
+
+    ],
     inventory: [
       {
         name: 'Der Boden',
@@ -68,7 +48,244 @@ export default [
         desc: 'Ein pseudo Inventar fuer alle sonstigen Modifikatoren',
         type: 'Ort',
         capacity: 0,
-        items: []
+        items: [
+          {
+            name: 'Absolute Dunkelheit',
+            desc: 'schlechte Sicht',
+            size: '',
+            slot: 'Passiv',
+            condition: 'Absolute Dunkelheit',
+            modifiers: {
+              attack:
+              {
+                war: {
+                  label:
+                  'Krigeswaffen',
+                  mod: -10,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                },
+                finesse: {
+                  label:
+                  'Finessewaffen',
+                  mod: -10,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                },
+                range: {
+                  label:
+                   'Fernkampf',
+                  mod: -10,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                },
+                thrown: {
+                  label:
+                  'Schleuderwaffen',
+                  mod: -10,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                },
+                unarmed: {
+                  label:
+                  'Unbewaffnet',
+                  mod: -10,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                }
+              },
+              defense: {
+                dodge: {
+                  label:
+                  'Ausweichen',
+                  mod: -10,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                },
+                block: {
+                  label:
+                  'Blocken',
+                  mod: -10,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                },
+                parry: {
+                  label:
+                  'Parieren',
+                  mod: -10,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                }
+              },
+              caster: {
+                MP: {
+                  label:
+                'Manipulation',
+                  mod: -10,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                },
+                PJ: {
+                  label:
+                  'Projektion',
+                  mod: -10,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                },
+                PT: {
+                  label:
+                   'Protektion',
+                  mod: -10,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                }
+              }
+            },
+            active: true
+          },
+          {
+            name: 'Daemmerlicht',
+            desc: 'verminderte Sicht',
+            size: '',
+            slot: 'Passiv',
+            condition: 'Daemmerlicht',
+            modifiers: {
+              attack:
+              {
+                war: {
+                  label:
+                  'Krigeswaffen',
+                  mod: -3,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                },
+                finesse: {
+                  label:
+                  'Finessewaffen',
+                  mod: -3,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                },
+                range: {
+                  label:
+                   'Fernkampf',
+                  mod: -3,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                },
+                thrown: {
+                  label:
+                  'Schleuderwaffen',
+                  mod: -3,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                },
+                unarmed: {
+                  label:
+                  'Unbewaffnet',
+                  mod: -3,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                }
+              },
+              defense: {
+                dodge: {
+                  label:
+                  'Ausweichen',
+                  mod: -3,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                },
+                block: {
+                  label:
+                  'Blocken',
+                  mod: -3,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                },
+                parry: {
+                  label:
+                  'Parieren',
+                  mod: -3,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                }
+              },
+              caster: {
+                MP: {
+                  label:
+                'Manipulation',
+                  mod: -3,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                },
+                PJ: {
+                  label:
+                  'Projektion',
+                  mod: -3,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                },
+                PT: {
+                  label:
+                   'Protektion',
+                  mod: -3,
+                  multi: 0,
+                  condition: '',
+                  active: 0
+                }
+              }
+            },
+            active: true
+          },
+          {
+            name: 'Medizin',
+            desc: 'Stufe 1',
+            size: '',
+            slot: 'Passiv',
+            modifiers: {
+              hp: {
+                TP: {
+                  label: 'Trefferpunkte',
+                  mod: 0,
+                  multi: 0.05,
+                  condition: '',
+                  active: 0
+                },
+                LP: {
+                  label: 'Lebenspunkte',
+                  mod: 0,
+                  multi: 0.05,
+                  condition: '',
+                  active: 0
+                }
+              }
+            },
+            active: true,
+            condition: ''
+          }
+        ]
       }
     ]
   },

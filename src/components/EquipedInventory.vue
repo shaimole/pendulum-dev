@@ -5,7 +5,7 @@
         <label>Waffe :</label>
       </b-col>
       <b-col>
-          <Item :item="getChar.equipped.weapon"/>
+          <Item :item="getChar.equipped.Waffe" equipped/>
       </b-col>
     </b-row>
     <b-row  align-h="start">
@@ -13,7 +13,7 @@
         <label>Kleidung :</label>
       </b-col>
       <b-col>
-          <Item :item="getChar.equipped.cloathing"/>
+          <Item :item="getChar.equipped.Kleidung" equipped/>
       </b-col>
     </b-row>
     <b-row  align-h="start">
@@ -21,7 +21,7 @@
         <label>Rüstung :</label>
       </b-col>
       <b-col>
-          <Item :item="getChar.equipped.armor"/>
+          <Item :item="getChar.equipped.Ruestung" equipped/>
       </b-col>
     </b-row>
     <b-row  align-h="start">
@@ -29,15 +29,7 @@
         <label>Umhang :</label>
       </b-col>
       <b-col>
-          <Item :item="getChar.equipped.cloak"/>
-      </b-col>
-    </b-row>
-    <b-row  align-h="start">
-      <b-col>
-        <label>Rucksack :</label>
-      </b-col>
-      <b-col>
-          <Item :item="getChar.equipped.backpack"/>
+          <Item :item="getChar.equipped.Umhang" equipped/>
       </b-col>
     </b-row>
     <b-row  align-h="start">
@@ -45,7 +37,7 @@
         <label>Schuhwerk :</label>
       </b-col>
       <b-col>
-          <Item :item="getChar.equipped.boots"/>
+          <Item :item="getChar.equipped.Schuhe" equipped/>
       </b-col>
     </b-row>
     <b-row  align-h="start">
@@ -53,7 +45,7 @@
         <label>Handschuhe :</label>
       </b-col>
       <b-col>
-          <Item :item="getChar.equipped.gloves"/>
+          <Item :item="getChar.equipped.Handschuhe" equipped/>
       </b-col>
     </b-row>
   </b-container>

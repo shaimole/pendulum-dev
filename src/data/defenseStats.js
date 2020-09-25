@@ -19,5 +19,12 @@ export default [
     mod: 10,
     parts: ['GS', 'WN'],
     value: 0
+  },
+  {
+    id: 'RW',
+    label: 'Ruestungswert',
+    mod: 0,
+    parts: [],
+    value: 0
   }
 ]

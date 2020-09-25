@@ -16,6 +16,8 @@ import newChar from '@/data/newChar'
 import positiveTraits from '@/data/traitsPositive'
 import neutralTraits from '@/data/traitsNeutral'
 import negativeTraits from '@/data/traitsNegative'
+import item from '@/data/item'
+import conditions from '@/data/conditions'
 
 export default {
   characters,
@@ -35,5 +37,7 @@ export default {
   newChar,
   positiveTraits,
   neutralTraits,
-  negativeTraits
+  negativeTraits,
+  item,
+  conditions
 }

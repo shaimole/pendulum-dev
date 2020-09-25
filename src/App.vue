@@ -1,5 +1,26 @@
 <template>
   <div id="app">
+    <button @click="exp = exp?  false : true">Export</button>
+    <div v-if="exp" ><b-form-textarea
+      id="textarea"
+      v-model="getCharacters"
+      rows="10"
+      max-rows="30000"
+      disabled
+    ></b-form-textarea>
+
+    </div>
+    <button @click="imp = imp?  false : true">Import</button>
+      <div v-if="imp" >
+            <b-button @click="importCharacters()">Starte Import</b-button>
+
+        <b-form-textarea
+      id="textarea"
+      v-model="impo"
+      rows="10"
+      max-rows="30000"
+    ></b-form-textarea>
+      </div>
      <b-card-group deck>
     <CharacterCard :isAdd="true"/>
     <CharacterCard v-for="character in getCharacters" :key="character.name"
@@ -16,13 +37,24 @@ export default {
   name: 'Pendulum',
   data () {
     return {
-      getActive: false
+      getActive: false,
+      exp: false,
+      imp: false,
+      impo: ''
     }
   },
   computed: {
     ...mapGetters([
       'getCharacters'
     ])
+  },
+  methods: {
+    importCharacters () {
+      const newChars = JSON.parse(this.impo)
+      for (const index in newChars) {
+        this.getCharacters.push(newChars[index])
+      }
+    }
   }
 }
 </script>
