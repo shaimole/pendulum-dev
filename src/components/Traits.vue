@@ -44,7 +44,7 @@
         </b-sidebar>
       </b-col>
       <b-col>
-        <b-button :disabled="noCreate" >Negtaive Eigenschaften</b-button>
+        <b-button :disabled="noCreate" v-b-toggle.traitsnegative >Negtaive Eigenschaften</b-button>
         <b-sidebar id="traitsnegative" :title="'Negative Eigenschaften verbleibende Punkte: ' + remainingPoints" bg-variant="dark"  text-variant="light" shadow>
           <div class="px-3 py-2">
             <b-list-group>

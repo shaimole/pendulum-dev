@@ -2,7 +2,7 @@
 <div>
       <button v-if="isLevelUp" block id="levelUpA" :disabled="addAttrPoints !== 0" @click="handleLevelUps()">Stufenaufstieg</button>
   <b-container fluid>
-<p>verbleibende Punkte: {{addAttrPoints ||  0 > remainingPoints ? 0 : remainingPoints}}</p>
+<p>verbleibende Punkte: {{addAttrPoints ||  (0 > remainingPoints ? 0 : remainingPoints)}}</p>
       <b-row class="justify-content-md-center" v-for="input in getCurrentAttribs" :key="input.label" align-h="start" >
         <b-col sm="3">
           <label :for="`type-${input.type}`">{{input.label}} :</label>

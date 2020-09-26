@@ -172,8 +172,8 @@ export default {
     reduceMods () {
       for (const index in this.mods) {
         for (const stat in this.mods[index]) {
-          if (this.mods[index][stat].mod + this.mods[index][stat].multi === 0) {
-            delete this.mods[index].stat
+          if (!(this.mods[index][stat].mod + this.mods[index][stat].multi)) {
+            delete this.mods[index][stat]
           } else {
             this.mods[index][stat].mod = parseFloat(this.mods[index][stat].mod)
             this.mods[index][stat].multi = parseFloat(this.mods[index][stat].multi) / 100

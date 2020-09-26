@@ -1,10 +1,9 @@
 <template>
-    <b-modal modal-class="CC" id="characterSheet" size="xl"  content-class="border-one ccContent" centered hide-footer>
+    <b-modal  lazy static modal-class="CC" id="characterSheet" size="xl"  content-class="border-one ccContent" centered hide-footer>
       <template v-slot:modal-header id="header">
         <b-row>
           <b-col sm="5">
             {{getChar.name}}
-
           </b-col>
           <b-col sm="1">
            <Conditions/>
@@ -31,6 +30,11 @@
           <b-tab title="Notizen"><Notes/></b-tab>
         </b-tabs>
       </div>
+        <b-row>
+          <b-col>
+            <b-button block @click=" $emit('togglecards'); $bvModal.hide('characterSheet')">X</b-button>
+          </b-col>
+        </b-row>
   </b-modal>
 </template>
 

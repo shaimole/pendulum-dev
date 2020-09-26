@@ -1,10 +1,10 @@
 <template>
   <div class="characterCardContainer">
     <div class="cardContent">
-       <b-card v-b-modal.characterCreation v-if="isAdd"  @click="createNewCharacter" bg-variant="white" header="Neu" text-variant="dark" img-src="https://icon-library.com/images/unknown-person-icon/unknown-person-icon-27.jpg" img-center img-alt="Image" img-height="170" img-width="110">
-      <NewCharacter/>
+       <b-card v-if="isAdd"  @click=" $emit('toggleloading');  $emit('togglecards'); openCCreations($bvModal);  $emit('toggleloading');" bg-variant="white" header="Neu" text-variant="dark" img-src="https://icon-library.com/images/unknown-person-icon/unknown-person-icon-27.jpg" img-center img-alt="Image" img-height="170" img-width="110">
+      <NewCharacter v-on:togglecards=" $emit('togglecards');" />
       </b-card>
-      <b-card  v-b-modal.characterSheet v-else :class="getClasses" @click="setCurrentCharacter(character)" bg-variant="dark" :header="character.name" text-variant="white" :img-src="getUrl()" img-center img-alt="Image" img-height="170" img-width="110">
+      <b-card  v-else :class="getClasses" @click=" $emit('toggleloading'); $emit('togglecards'); openCSheet($bvModal, character);  $emit('toggleloading');" bg-variant="dark" :header="character.name" text-variant="white" :img-src="getUrl()" img-center img-alt="Image" img-height="170" img-width="110">
       </b-card>
     </div>
   </div>
@@ -31,6 +31,19 @@ export default {
     ]),
     getUrl () {
       return 'http://www.blackwyrmlair.net/~chevar/Portraits/JPG/' + this.character.gender + this.character.image + 'L.jpg'
+    },
+    async openCCreations ($bvModal) {
+      this.createNewCharacter()
+      $bvModal.show('characterCreation')
+    },
+    async openCSheet ($bvModal, character) {
+      const self = this
+      setTimeout(function () {
+        self.setCurrentCharacter(character)
+        setTimeout(function () {
+          $bvModal.show('characterSheet')
+        }, 500)
+      }, 10)
     }
   }
 }

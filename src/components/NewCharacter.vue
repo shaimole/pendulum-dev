@@ -34,14 +34,14 @@
     <div v-if="step === 5" class="fade">
       <Attributes/>
       <div :class="isNextEnabled">
-        <b-button :class="isNextEnabled" block @click=" finalize($bvModal)">{{ getNextName}}</b-button>
+        <b-button :class="isNextEnabled" block @click=" $emit('togglecards'); finalize($bvModal)" >{{ getNextName}}</b-button>
       </div>
     </div>
     <div v-if="step === 6" class="fade">
       <h1> Zusatzpunkte Mensch </h1>
       <Attributes noCreate :addAttrPoints="3"/>
       <div :class="isNextEnabled">
-        <b-button :class="isNextEnabled" block @click=" finalize($bvModal)">{{ getNextName}}</b-button>
+        <b-button :class="isNextEnabled" block @click=" $emit('togglecards'); finalize($bvModal)">{{ getNextName}}</b-button>
       </div>
     </div>
   </b-modal>
@@ -105,7 +105,7 @@ export default {
       'checkName'
     ]),
     finalize (modal) {
-      if (this.getChar.race !== 'human' && this.step !== 6) {
+      if (this.getChar.race !== 'human' || this.step === 6) {
         modal.hide('characterCreation')
         this.step = 0
         this.saveCharacter()

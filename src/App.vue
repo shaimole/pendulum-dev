@@ -21,13 +21,14 @@
       max-rows="30000"
     ></b-form-textarea>
       </div>
-     <b-card-group deck>
+     <b-card-group deck :hidden="false">
     <CharacterCard :isAdd="true"/>
     <CharacterCard v-for="character in getCharacters" :key="character.name"
-    :character="character"
+    :character="character" v-on:togglecards="cards = cards ? false :true" v-on:toggleloading="loading = loading ? false : true"
     />
   </b-card-group>
-  <CharacterSheet/>
+  <CharacterSheet v-on:toggleloading="loading = loading ? false : true" v-on:togglecards="cards = cards ? false :true"/>
+  <b-spinner id="loader" v-if="loading" class="m-5" label="Busy"></b-spinner>
   </div>
 </template>
 
@@ -40,7 +41,9 @@ export default {
       getActive: false,
       exp: false,
       imp: false,
-      impo: ''
+      impo: '',
+      loading: false,
+      cards: true
     }
   },
   computed: {
@@ -89,6 +92,15 @@ button {
   border-image: url('~@/assets/Rahmen.png') 27 27 27 27 repeat repeat !important;
   border-style:solid;
   background-clip: unset !important;
+}
+#loader {
+  position: absolute;
+  top:0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  margin: auto !important;
 }
 
 </style>
