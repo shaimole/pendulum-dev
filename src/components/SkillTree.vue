@@ -1,124 +1,102 @@
 <template>
-        <div class="tree">
-    <ul>
-  <li>
-    <a href="#">Parent</a>
-    <ul>
-      <li>
-        <a href="#">Child</a>
-        <ul>
-            <li>
-                <a href="#">Grand Child</a>
-              </li>
-              <li>
-                <a href="#">Grand Child</a>
-              </li>
-              <li>
-                <a href="#">Grand Child</a>
-              </li>
-          <li>
-            <a href="#">Grand Child</a>
-            <ul>
-              <li>
-                <a href="#">Grand Child</a>
-                <ul>
-              <li>
-                <a href="#">Grand Child</a>
-              </li>
-            </ul>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-</ul>
-        </div>
+  <div id="container" class="w-96 h-96" @click="changeCam()"></div>
 </template>
 
-<style scoped>
- .tree {
- transform-origin: 50%;
-}
- .tree ul {
- position: relative;
- padding: 1em 0;
- white-space: nowrap;
- margin: 0 auto;
- text-align: center;
-}
- .tree ul::after {
- content: '';
- display: table;
- clear: both;
-}
- .tree li {
- display: inline-block;
- vertical-align: top;
- text-align: center;
- list-style-type: none;
- position: relative;
- padding: 1em 0.5em 0 0.5em;
-}
- .tree li::before, .tree li::after {
- content: '';
- position: absolute;
- top: 0;
- right: 50%;
- border-top: 1px solid #ccc;
- width: 50%;
- height: 1em;
-}
- .tree li::after {
- right: auto;
- left: 50%;
- border-left: 1px solid #ccc;
-}
- .tree li:only-child::after, .tree li:only-child::before {
- display: none;
-}
- .tree li:only-child {
- padding-top: 0;
-}
- .tree li:first-child::before, .tree li:last-child::after {
- border: 0 none;
-}
- .tree li:last-child::before {
- border-right: 1px solid #ccc;
- border-radius: 0 5px 0 0;
-}
- .tree li:first-child::after {
- border-radius: 5px 0 0 0;
-}
- .tree ul ul::before {
- content: '';
- position: absolute;
- top: 0;
- left: 50%;
- border-left: 1px solid #ccc;
- width: 0;
- height: 1em;
-}
- .tree li a {
- border: 1px solid #ccc;
- padding: 0.5em 0.75em;
- text-decoration: none;
- display: inline-block;
- border-radius: 5px;
- color: white;
- position: relative;
- top: 1px;
-}
-.tree li a:hover  {
-      color: #fff;
-      border: 1px solid #86C232;
-}
-.tree li::before {
-     border-color: #86C232 !important;
-}
-.tree ul::before +  li a:hover {
-     border-color: #86C232 !important;
-}
+<script>
+import * as THREE from 'three'
 
-</style>
+export default {
+  name: 'THREETest',
+  data () {
+    return {
+      camera: null,
+      window: window,
+      scene: null,
+      renderer: null,
+      mesh: null,
+      root: {
+        name: 'test',
+        description: '',
+        childrend: [
+          {
+            name: 'test',
+            description: '',
+            childrend: [
+              {
+                name: 'test',
+                description: '',
+                childrend: []
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  methods: {
+    init: function () {
+      const container = document.getElementById('container')
+
+      this.camera = new THREE.PerspectiveCamera(
+        70, // opening angle
+        container.clientWidth / container.clientHeight, // aspect ratio
+        0.01, // near
+        100 // far
+      )
+      this.camera.position.z = 20
+
+      this.scene = new THREE.Scene()
+
+      const vertices = []
+
+      for (let i = 0; i < 10000; i++) {
+        // const x = THREE.MathUtils.randFloatSpread(2000)
+        // const y = THREE.MathUtils.randFloatSpread(2000)
+        // const z = THREE.MathUtils.randFloatSpread(2000)
+
+        vertices.push(0, 0, 0)
+      }
+
+      const geometry = new THREE.BufferGeometry()
+      geometry.setAttribute(
+        'position',
+        new THREE.Float32BufferAttribute(vertices, 3)
+      )
+
+      const material = new THREE.PointsMaterial({ color: 0x888888 })
+      const points = new THREE.Points(geometry, material)
+      this.scene.add(points)
+      // this.addCube()
+
+      this.renderer = new THREE.WebGLRenderer({ antialias: true })
+      this.renderer.setSize(container.clientWidth, container.clientHeight)
+      container.appendChild(this.renderer.domElement)
+    },
+    animate: function () {
+      requestAnimationFrame(this.animate)
+      this.renderer.render(this.scene, this.camera)
+    },
+    changeCam () {
+      this.camera.position.x += 0.01
+    },
+    addCube () {
+      const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2)
+      const material = new THREE.MeshNormalMaterial()
+      this.mesh = new THREE.Mesh(geometry, material)
+      this.scene.add(this.mesh)
+    }
+  },
+  mounted () {
+    this.init()
+    this.animate()
+  },
+  computed: {
+    getCanvasSize () {
+      return {
+        height: 1000,
+        width: 1000
+      }
+    }
+  }
+}
+</script>
