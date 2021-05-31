@@ -1,5 +1,8 @@
 <template>
-  <div id="container" class="w-96 h-96" @click="changeCam()"></div>
+  <div>
+    <img src="../assets/threejs/back.png" />
+    <div id="container" class="w-96 h-96" @click="changeCam()"></div>
+  </div>
 </template>
 
 <script>
@@ -17,6 +20,7 @@ export default {
       root: {
         name: 'test',
         description: '',
+        clicked: '',
         childrend: [
           {
             name: 'test',
@@ -44,6 +48,7 @@ export default {
         100 // far
       )
       this.camera.position.z = 10
+      this.camera.position.y = 5
 
       this.scene = new THREE.Scene()
 
@@ -51,10 +56,10 @@ export default {
       // const nodePos = [0, 1.7, 0]
       // this.calcPos(this.root, nodePos)
       const positions = [
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(0, 1, 0),
         new THREE.Vector3(0, 2, 0),
-        new THREE.Vector3(0, 3, 0),
-        new THREE.Vector3(0, 4, 0),
-        new THREE.Vector3(0, 5, 0)
+        new THREE.Vector3(0, 3, 0)
       ]
       for (const index in positions) {
         this.addCube(positions[index])
@@ -69,14 +74,32 @@ export default {
       // const points = new THREE.Points(geometry, material)
       // this.scene.add(points)
       // this.addCube()
-
+      const loader = new THREE.CubeTextureLoader()
+      const texture = loader.setPath('../assets/threejs/').load(
+        [
+          'back.png',
+          'back.png',
+          'back.png',
+          'back.png',
+          'back.png',
+          'back.png'
+          // 'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-x.jpg',
+          // 'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-y.jpg',
+          // 'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-y.jpg',
+          // 'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-z.jpg',
+          // 'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-z.jpg'
+        ],
+        null,
+        null,
+        error => console.log(error)
+      )
+      this.scene.background = texture
       this.renderer = new THREE.WebGLRenderer({ antialias: true })
       this.renderer.setSize(container.clientWidth, container.clientHeight)
       container.appendChild(this.renderer.domElement)
     },
 
-    calcPos (node, prevPos) {
-      node.pos = [prevPos[0], prevPos[1] + 0.3, prevPos[2]]
+    calcPos (node, pos) {
       for (const child in node.children) {
         this.calcPos(child, node.pos)
       }
@@ -93,10 +116,11 @@ export default {
     },
     animate: function () {
       requestAnimationFrame(this.animate)
+      this.camera.rotateY(0.05)
       this.renderer.render(this.scene, this.camera)
     },
     changeCam () {
-      this.camera.position.x += 0.01
+      this.camera.lookAt(0, 2, 5)
     },
     addCube (pos) {
       const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1)
