@@ -1,13 +1,17 @@
 <template>
   <div>
-    <img src="../assets/threejs/back.png" />
     <div id="container" class="w-96 h-96" @click="changeCam()"></div>
   </div>
 </template>
 
 <script>
 import * as THREE from 'three'
-
+import skyboxBack from '../assets/threejs/back.png'
+import skyboxFront from '../assets/threejs/front.png'
+import skyboxUp from '../assets/threejs/top.png'
+import skyboxDown from '../assets/threejs/bottom.png'
+import skyboxLeft from '../assets/threejs/left.png'
+import skyboxRight from '../assets/threejs/right.png'
 export default {
   name: 'THREETest',
   data () {
@@ -56,14 +60,47 @@ export default {
       // const nodePos = [0, 1.7, 0]
       // this.calcPos(this.root, nodePos)
       const positions = [
-        new THREE.Vector3(0, 0, 0),
-        new THREE.Vector3(0, 1, 0),
-        new THREE.Vector3(0, 2, 0),
-        new THREE.Vector3(0, 3, 0)
+        new THREE.Vector3(0, 0, -8),
+        new THREE.Vector3(0, 3, -8),
+        new THREE.Vector3(0, 6, -8),
+        new THREE.Vector3(4, 6, -8),
+        new THREE.Vector3(-4, 6, -8),
+        new THREE.Vector3(0, 9, -8),
+        new THREE.Vector3(0, 12, -8)
       ]
       for (const index in positions) {
         this.addCube(positions[index])
       }
+      const material = new THREE.LineBasicMaterial({ color: 0x0000ff })
+
+      const points = []
+      points.push(new THREE.Vector3(0, 0, -8))
+      points.push(new THREE.Vector3(0, 12, -8))
+
+      const geometry = new THREE.BufferGeometry().setFromPoints(points)
+
+      const line = new THREE.Line(geometry, material)
+      this.scene.add(line)
+
+      const points2 = []
+      points2.push(new THREE.Vector3(0, 3, -8))
+      points2.push(new THREE.Vector3(4, 6, -8))
+
+      const geometry2 = new THREE.BufferGeometry().setFromPoints(points2)
+
+      const line2 = new THREE.Line(geometry2, material)
+
+      this.scene.add(line2)
+
+      const points3 = []
+      points3.push(new THREE.Vector3(0, 3, -8))
+      points3.push(new THREE.Vector3(-4, 6, -8))
+
+      const geometry3 = new THREE.BufferGeometry().setFromPoints(points3)
+
+      const line3 = new THREE.Line(geometry3, material)
+
+      this.scene.add(line3)
       // const geometry = new THREE.BufferGeometry()
       // geometry.setAttribute(
       //   'position',
@@ -75,19 +112,14 @@ export default {
       // this.scene.add(points)
       // this.addCube()
       const loader = new THREE.CubeTextureLoader()
-      const texture = loader.setPath('../assets/threejs/').load(
+      const texture = loader.load(
         [
-          'back.png',
-          'back.png',
-          'back.png',
-          'back.png',
-          'back.png',
-          'back.png'
-          // 'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-x.jpg',
-          // 'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-y.jpg',
-          // 'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-y.jpg',
-          // 'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-z.jpg',
-          // 'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-z.jpg'
+          skyboxLeft,
+          skyboxRight,
+          skyboxUp,
+          skyboxDown,
+          skyboxBack,
+          skyboxFront
         ],
         null,
         null,
@@ -105,15 +137,6 @@ export default {
       }
       this.addNodeToScene(node)
     },
-    addNodeToScene (node) {
-      const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1)
-      const material = new THREE.MeshNormalMaterial()
-      this.mesh = new THREE.Mesh(geometry, material)
-      this.scene.add(this.mesh)
-      for (const child in node.children) {
-        this.addNodeToScene(child, node.pos)
-      }
-    },
     animate: function () {
       requestAnimationFrame(this.animate)
       this.camera.rotateY(0.05)
@@ -123,7 +146,7 @@ export default {
       this.camera.lookAt(0, 2, 5)
     },
     addCube (pos) {
-      const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1)
+      const geometry = new THREE.BoxGeometry(1, 1, 1)
       const material = new THREE.MeshNormalMaterial()
       this.mesh = new THREE.Mesh(geometry, material)
       this.scene.add(this.mesh)
