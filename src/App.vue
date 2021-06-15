@@ -1,7 +1,7 @@
 <template>
   <div
     id="app"
-    class="bg-black-pearl-500 h-full min-h-screen flex flex-col border-one border-tahiti-gold-500"
+    class="bg-black-pearl-500 h-full min-h-screen flex flex-col border-one border-tahiti-gold-500 items-stretch"
   >
     <router-view> </router-view>
   </div>
