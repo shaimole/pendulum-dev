@@ -1,10 +1,12 @@
 <template>
   <div
     id="container"
-    class="h-full w-full flex-1"
+    class="h-full w-full flex-1 relative"
     @scroll="changeCam()"
     @click="clickTest()"
-  ></div>
+  >
+    <div :show="!isLoadingFinished" class="text-white loading">Loading</div>
+  </div>
 </template>
 
 <script>
@@ -17,15 +19,15 @@ import skyboxLeft from '../assets/skybox/left.png'
 import skyboxRight from '../assets/skybox/right.png'
 import robotoRegular from '../assets/fonts/Roboto_Regular.json'
 export default {
-  name: 'THREETest',
+  name: 'SkillTree',
   data () {
     return {
       camera: null,
+      isLoadingFinished: false,
       currentRotation: 0,
       window: window,
       scene: null,
       mousedown: false,
-      time: 0,
       font: null,
       renderer: null,
       mesh: null,
@@ -79,8 +81,7 @@ export default {
           skyboxLeft,
           skyboxRight
         ],
-        null,
-        null,
+        () => (this.isInit = true),
         error => console.log(error)
       )
 
@@ -224,7 +225,9 @@ export default {
     },
     animate: function () {
       requestAnimationFrame(this.animate)
-
+      if (!this.isInit) {
+        return
+      }
       let roationThisFrame
       if (this.rotation > 0) {
         roationThisFrame = 0.01
@@ -266,3 +269,11 @@ export default {
   }
 }
 </script>
+<style scoped>
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+</style>
