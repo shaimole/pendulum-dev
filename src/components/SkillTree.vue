@@ -1,23 +1,29 @@
 <template>
-  <div
-    id="container"
-    class="h-full w-full flex-1 relative"
-    @wheel="zoom($event)"
-    @click="clickTest()"
-  >
-    <LoadingSpinner class="loading" />
+  <div class="flex items-center justify-center">
+    <div class="flex flex-col items-center justify-center">
+      <div
+        id="container"
+        class="md:h-160 md:w-160  w-72 h-72 relative"
+        @wheel="zoom($event)"
+        @click="clickTest()"
+      >
+        <LoadingSpinner v-show="isLoadingFinished !== true" class="loading" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import * as THREE from 'three'
-import skyboxBack from '../assets/skybox/back.png'
-import skyboxFront from '../assets/skybox/front.png'
-import skyboxUp from '../assets/skybox/top.png'
-import skyboxDown from '../assets/skybox/bottom.png'
-import skyboxLeft from '../assets/skybox/left.png'
-import skyboxRight from '../assets/skybox/right.png'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
+
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
+
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
 import robotoRegular from '../assets/fonts/Roboto_Regular.json'
+import * as THREE from 'three'
+import camera from '../three/camera.js'
+import skybox from '../three/skybox.js'
+
 const amount = 30
 export default {
   name: 'SkillTree',
@@ -26,6 +32,7 @@ export default {
       camera: null,
       isLoadingFinished: false,
       currentRotation: 0,
+      composer: null,
       zMove: 0,
       xRotation: 0,
       lines: [],
@@ -35,57 +42,34 @@ export default {
       font: null,
       renderer: null,
       mesh: null,
-      newPosition: new THREE.Vector3(),
-      root: {
-        name: 'test',
-        description: '',
-        clicked: '',
-        childrend: [
-          {
-            name: 'test',
-            description: '',
-            childrend: [
-              {
-                name: 'test',
-                description: '',
-                childrend: []
-              }
-            ]
-          }
-        ]
-      }
+      newPosition: new THREE.Vector3()
     }
   },
   methods: {
-    initCamera () {
-      const container = document.getElementById('container')
-      const fov = 75
-      const aspect = container.clientWidth / container.clientHeight
-      const near = 0.01
-      const far = 100
-      this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far)
-      this.camera.position.z = 0
-      this.camera.position.y = 6
-      this.camera.rotation.order = 'YXZ'
+    init: function () {
+      this.initFont()
+      this.initCamera()
+      this.initScene()
+      this.initSkybox()
+      this.initContent()
+      this.initRenderer()
+      this.initControls()
     },
     initFont () {
-      const fontLoader = new THREE.FontLoader()
-      this.font = fontLoader.parse(robotoRegular)
+      this.font = new THREE.FontLoader().parse(robotoRegular)
     },
+    initCamera () {
+      const container = document.getElementById('container')
+      this.camera = camera.getThreeJSCamera(container)
+    },
+
     initScene () {
       this.scene = new THREE.Scene(0)
     },
     initSkybox () {
       const loader = new THREE.CubeTextureLoader()
       const texture = loader.load(
-        [
-          skyboxFront,
-          skyboxBack,
-          skyboxUp,
-          skyboxDown,
-          skyboxLeft,
-          skyboxRight
-        ],
+        skybox.textures,
         () => {
           setTimeout(() => (this.isLoadingFinished = true), 500)
         },
@@ -103,6 +87,21 @@ export default {
       const container = document.getElementById('container')
       this.renderer = new THREE.WebGLRenderer({ antialias: true })
       this.renderer.setSize(container.clientWidth, container.clientHeight)
+      const renderScene = new RenderPass(this.scene, this.camera)
+
+      const bloomPass = new UnrealBloomPass(
+        new THREE.Vector2(window.innerWidth, window.innerHeight),
+        1.5,
+        0.4,
+        0.85
+      )
+      bloomPass.threshold = 0.2
+      bloomPass.strength = 1
+      bloomPass.radius = 0.7
+
+      this.composer = new EffectComposer(this.renderer)
+      this.composer.addPass(renderScene)
+      this.composer.addPass(bloomPass)
       container.appendChild(this.renderer.domElement)
     },
     initControls () {
@@ -125,15 +124,7 @@ export default {
         container.onmousemove = null
       })
     },
-    init: function () {
-      this.initFont()
-      this.initCamera()
-      this.initScene()
-      this.initSkybox()
-      this.initContent()
-      this.initRenderer()
-      this.initControls()
-    },
+
     onDragDefault ({ movementX }) {
       if (this.rotation) {
         return
@@ -150,12 +141,11 @@ export default {
       if (this.zMove !== 0) {
         return
       }
-      console.log('fire')
       if (event.deltaY < 0) {
-        this.zMove = amount * 2 - 8
+        this.zMove = amount * 2 - 5
         this.xRotation = 1
       } else {
-        this.zMove = -amount * 2 + 8
+        this.zMove = -amount * 2 + 5
         this.xRotation = -1
       }
     },
@@ -190,17 +180,17 @@ export default {
       const group = new THREE.Group()
       this.scene.add(group)
       const positions = [
-        new THREE.Vector3(center, 0, distance),
-        new THREE.Vector3(center, 3, distance),
+        new THREE.Vector3(center + Math.random(), 0, distance),
+        new THREE.Vector3(center + Math.random(), 3, distance),
         new THREE.Vector3(center, 6, distance),
         new THREE.Vector3(center + 4.0, 6, distance),
         new THREE.Vector3(center - 4.0, 6, distance),
-        new THREE.Vector3(center, 9, distance),
+        new THREE.Vector3(center, 9 + Math.random(), distance),
         new THREE.Vector3(center, 12, distance)
       ]
       for (const index in positions) {
         for (const sphere of [
-          { radius: 1, color: 0xcc081d, opacity: 0.75, scale: 0.25 },
+          { radius: 1, color: 0xffffff, opacity: 0.75, scale: 0.25 },
           { radius: 1.5, color: 0xfd6e73, opacity: 0.5, scale: 0.25 },
           { radius: 4, color: 0x986303, opacity: 0.25, scale: 0.1 }
         ]) {
@@ -250,24 +240,24 @@ export default {
       const line3 = new THREE.Line(geometry3, material)
 
       group.add(line3)
-      // var textGeo = new THREE.TextGeometry('X', {
-      //   font: this.font,
-      //   size: 2,
-      //   height: 1,
-      //   curveSegments: 1,
-      //   bevelEnabled: true,
-      //   bevelThickness: 0.02,
-      //   bevelSize: 0.02,
-      //   bevelOffset: 0,
-      //   bevelSegments: 5
-      // })
-      // const text = new THREE.Mesh(
-      //   textGeo,
-      //   new THREE.LineBasicMaterial({ color: 0xffffff })
-      // )
-      // text.position.copy(new THREE.Vector3(center, -5, distance))
-      // text.geometry.center()
-      // group.add(text)
+      var textGeo = new THREE.TextGeometry('Herro', {
+        font: this.font,
+        size: 2,
+        height: 1,
+        curveSegments: 1,
+        bevelEnabled: true,
+        bevelThickness: 0.02,
+        bevelSize: 0.02,
+        bevelOffset: 0,
+        bevelSegments: 5
+      })
+      const text = new THREE.Mesh(
+        textGeo,
+        new THREE.LineBasicMaterial({ color: 0xffffff })
+      )
+      text.position.copy(new THREE.Vector3(center, -5, distance))
+      text.geometry.center()
+      group.add(text)
       group.rotation.y = this.currentRotation
       group.translateZ(-amount * 2)
       this.currentRotation += (Math.PI * 2) / amount
@@ -299,7 +289,8 @@ export default {
       }
       this.spinCamera()
       this.zoomCamera()
-      this.renderer.render(this.scene, this.camera)
+      this.composer.render()
+      // this.renderer.render(this.scene, this.camera)
     },
     zoomCamera () {
       if (this.zMove > 0 || (this.zMove && !this.xRotation)) {
@@ -312,7 +303,7 @@ export default {
       }
     },
     rotateCamera () {
-      const maxCameraRotation = 0.15
+      const maxCameraRotation = 0.25
       let xRotationThisFrame = maxCameraRotation
       if (Math.abs(this.xRotation) < maxCameraRotation) {
         xRotationThisFrame = Math.abs(this.xRotation)
@@ -325,7 +316,7 @@ export default {
       this.camera.position.y -= xRotationThisFrame * 10
     },
     moveCameraZ () {
-      const maxCameraZMove = 0.1 * amount
+      const maxCameraZMove = 0.3 * amount
       let zMoveThisFrame = maxCameraZMove
       if (Math.abs(this.zMove) < maxCameraZMove) {
         zMoveThisFrame = Math.abs(this.zMove)
@@ -337,7 +328,7 @@ export default {
       this.camera.translateZ(-zMoveThisFrame)
     },
     spinCamera () {
-      const maxCameraHorizontalMove = 0.02
+      const maxCameraHorizontalMove = 0.05
       let roationThisFrame
       if (this.rotation > 0) {
         roationThisFrame = maxCameraHorizontalMove
