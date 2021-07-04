@@ -7,7 +7,7 @@ export default {
   movementX: 0,
   currentRotation: 0,
   xRotation: 0,
-  updateSceneByControls () {
+  updateCamera () {
     if (this.zMove > 1) {
       this.moveCameraZ()
       return

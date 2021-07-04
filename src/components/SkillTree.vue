@@ -145,12 +145,12 @@ export default {
       const group = new THREE.Group()
       this.scene.add(group)
       const positions = [
-        new THREE.Vector3(center + Math.random(), 0, distance),
-        new THREE.Vector3(center + Math.random(), 3, distance),
+        new THREE.Vector3(center, 0, distance),
+        new THREE.Vector3(center, 3, distance),
         new THREE.Vector3(center, 6, distance),
-        new THREE.Vector3(center + 4.0, 6, distance),
-        new THREE.Vector3(center - 4.0, 6, distance),
-        new THREE.Vector3(center, 9 + Math.random(), distance),
+        new THREE.Vector3(center + 4.0, 9, distance),
+        new THREE.Vector3(center - 4.0, 9, distance),
+        new THREE.Vector3(center, 9, distance),
         new THREE.Vector3(center, 12, distance)
       ]
       for (const index in positions) {
@@ -178,8 +178,8 @@ export default {
       const material = new THREE.LineBasicMaterial({ color: 0xcc081d })
 
       const points = []
-      points.push(new THREE.Vector3(center, 0, distance))
-      points.push(new THREE.Vector3(center, 12, distance))
+      points.push(positions[0])
+      points.push(positions[6])
 
       const geometry = new THREE.BufferGeometry().setFromPoints(points)
 
@@ -187,8 +187,8 @@ export default {
       group.add(line)
 
       const points2 = []
-      points2.push(new THREE.Vector3(center, 3, distance))
-      points2.push(new THREE.Vector3(center + 4, 6, distance))
+      points2.push(positions[2])
+      points2.push(positions[3])
 
       const geometry2 = new THREE.BufferGeometry().setFromPoints(points2)
 
@@ -197,8 +197,8 @@ export default {
       group.add(line2)
 
       const points3 = []
-      points3.push(new THREE.Vector3(center, 3, distance))
-      points3.push(new THREE.Vector3(center - 4, 6, distance))
+      points2.push(positions[2])
+      points2.push(positions[4])
 
       const geometry3 = new THREE.BufferGeometry().setFromPoints(points3)
 
@@ -241,7 +241,7 @@ export default {
       if (!this.isLoadingFinished) {
         return
       }
-      this.controls.updateSceneByControls()
+      this.controls.updateCamera()
       this.composer.render()
     }
   },
