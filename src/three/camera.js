@@ -6,7 +6,7 @@ export default {
   posZ: 0,
   posY: 6,
   rotationOrder: 'YXZ',
-  getThreeJSCamera (container) {
+  getThreeJSCamera () {
     const aspect = 1
     const threeCam = new THREE.PerspectiveCamera(
       this.fov,

@@ -5,7 +5,6 @@
         id="container"
         class="md:h-160 md:w-160  w-72 h-72 relative"
         @wheel="zoom($event)"
-        @click="clickTest()"
       >
         <LoadingSpinner v-show="isLoadingFinished !== true" class="loading" />
       </div>
@@ -23,8 +22,9 @@ import robotoRegular from '../assets/fonts/Roboto_Regular.json'
 import * as THREE from 'three'
 import camera from '../three/camera.js'
 import skybox from '../three/skybox.js'
+import controls from '../three/controls.js'
 
-const amount = 30
+const amountOfTrees = 30
 export default {
   name: 'SkillTree',
   data () {
@@ -41,8 +41,7 @@ export default {
       mousedown: false,
       font: null,
       renderer: null,
-      mesh: null,
-      newPosition: new THREE.Vector3()
+      mesh: null
     }
   },
   methods: {
@@ -79,7 +78,7 @@ export default {
       this.scene.background = texture
     },
     initContent () {
-      for (let i = 0; i !== amount; i++) {
+      for (let i = 0; i !== amountOfTrees; i++) {
         this.addTree(0, 0)
       }
     },
@@ -105,49 +104,15 @@ export default {
       container.appendChild(this.renderer.domElement)
     },
     initControls () {
-      const container = document.getElementById('container')
-      container.addEventListener('scroll', e => console.log('jo'))
-      container.addEventListener(
-        'touchmove',
-        function (event) {
-          event.preventDefault()
-        },
-        false
+      this.controls = controls
+      this.controls.init(
+        document.getElementById('container'),
+        this.camera,
+        amountOfTrees
       )
-      container.addEventListener('mousedown', e => {
-        container.onmousemove = e => {
-          this.onDragDefault(e)
-        }
-      })
-
-      container.addEventListener('mouseup', e => {
-        container.onmousemove = null
-      })
-    },
-
-    onDragDefault ({ movementX }) {
-      if (this.rotation) {
-        return
-      }
-      if (movementX > 0) {
-        this.rotation = (Math.PI * 2) / amount
-        return
-      }
-      if (movementX < 0) {
-        this.rotation = -((Math.PI * 2) / amount)
-      }
     },
     zoom (event) {
-      if (this.zMove !== 0) {
-        return
-      }
-      if (event.deltaY < 0) {
-        this.zMove = amount * 2 - 5
-        this.xRotation = 1
-      } else {
-        this.zMove = -amount * 2 + 5
-        this.xRotation = -1
-      }
+      controls.zoom(event)
     },
     createGeometry (radius) {
       const geometry = new THREE.BufferGeometry()
@@ -259,25 +224,14 @@ export default {
       text.geometry.center()
       group.add(text)
       group.rotation.y = this.currentRotation
-      group.translateZ(-amount * 2)
-      this.currentRotation += (Math.PI * 2) / amount
+      group.translateZ(-amountOfTrees * 2)
+      this.currentRotation += (Math.PI * 2) / amountOfTrees
     },
     calcPos (node, pos) {
       for (const child in node.children) {
         this.calcPos(child, node.pos)
       }
       this.addNodeToScene(node)
-    },
-    clickTest () {
-      var selectedObject
-      var raycaster = new THREE.Raycaster()
-      var mouse = new THREE.Vector2()
-      raycaster.setFromCamera(mouse, this.camera)
-      var intersects = raycaster.intersectObjects([], true)
-      if (intersects.length > 0) {
-        selectedObject = intersects[0]
-        alert(selectedObject)
-      }
     },
     animate: function () {
       requestAnimationFrame(this.animate)
@@ -287,64 +241,8 @@ export default {
       if (!this.isLoadingFinished) {
         return
       }
-      this.spinCamera()
-      this.zoomCamera()
+      this.controls.updateSceneByControls()
       this.composer.render()
-      // this.renderer.render(this.scene, this.camera)
-    },
-    zoomCamera () {
-      if (this.zMove > 0 || (this.zMove && !this.xRotation)) {
-        this.moveCameraZ()
-        return
-      }
-      if (this.xRotation !== 0) {
-        console.log(this.camera)
-        this.rotateCamera()
-      }
-    },
-    rotateCamera () {
-      const maxCameraRotation = 0.25
-      let xRotationThisFrame = maxCameraRotation
-      if (Math.abs(this.xRotation) < maxCameraRotation) {
-        xRotationThisFrame = Math.abs(this.xRotation)
-      }
-      if (this.xRotation < 0) {
-        xRotationThisFrame = -xRotationThisFrame
-      }
-      this.xRotation -= xRotationThisFrame
-      this.camera.rotation.x += xRotationThisFrame
-      this.camera.position.y -= xRotationThisFrame * 10
-    },
-    moveCameraZ () {
-      const maxCameraZMove = 0.3 * amount
-      let zMoveThisFrame = maxCameraZMove
-      if (Math.abs(this.zMove) < maxCameraZMove) {
-        zMoveThisFrame = Math.abs(this.zMove)
-      }
-      if (this.zMove < 0) {
-        zMoveThisFrame = -zMoveThisFrame
-      }
-      this.zMove -= zMoveThisFrame
-      this.camera.translateZ(-zMoveThisFrame)
-    },
-    spinCamera () {
-      const maxCameraHorizontalMove = 0.05
-      let roationThisFrame
-      if (this.rotation > 0) {
-        roationThisFrame = maxCameraHorizontalMove
-        if (this.rotation < maxCameraHorizontalMove) {
-          roationThisFrame = this.rotation
-        }
-        this.rotation -= roationThisFrame
-        this.camera.rotation.y += roationThisFrame
-      } else if (this.rotation < 0) {
-        roationThisFrame = -maxCameraHorizontalMove
-        if (Math.abs(this.rotation) < maxCameraHorizontalMove) {
-          roationThisFrame = this.rotation
-        }
-        this.rotation -= roationThisFrame
-        this.camera.rotation.y += roationThisFrame
-      }
     }
   },
   mounted () {
