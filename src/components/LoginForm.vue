@@ -11,7 +11,7 @@
           Username/E-Mail
         </label>
         <input
-          class="shadow-xl  text-xs appearance-none border rounded w-full py-2 px-3 text-black-pearl-500 mb-3"
+          class="shadow-xl text-xs appearance-none border rounded w-full py-2 px-3 text-black-pearl-500 mb-3"
           id="username"
           type="text"
           v-model="username"

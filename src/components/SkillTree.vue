@@ -236,7 +236,7 @@ export default {
     animate: function () {
       requestAnimationFrame(this.animate)
       for (const line of this.lines) {
-        line.rotation.y += 0.01
+        line.rotation.y += 0.005
       }
       if (!this.isLoadingFinished) {
         return

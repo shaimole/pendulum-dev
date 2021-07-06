@@ -5,19 +5,46 @@ export default {
   rotation: 0,
   zMove: 0,
   movementX: 0,
+  state: 0,
+  states: {
+    zoomedOut: 0,
+    zoomingIn: 1,
+    rotatingUp: 2,
+    zoomedIn: 4,
+    rotatingDown: 8,
+    zoomingOut: 16,
+    rotating: 32
+  },
   currentRotation: 0,
   xRotation: 0,
   updateCamera () {
-    if (this.zMove > 1) {
+    console.log(this.state)
+    if (this.isZooming()) {
       this.moveCameraZ()
       return
     }
-    if (this.xRotation !== 0) {
+    if (this.isRotatingX()) {
       this.rotateCamera()
       return
     }
-    this.moveCameraZ()
-    this.spinCamera()
+    if (this.isSpinning()) {
+      this.spinCamera()
+    }
+  },
+  isZooming () {
+    return (
+      this.state === this.states.zoomingIn ||
+      this.state === this.states.zoomingOut
+    )
+  },
+  isRotatingX () {
+    return (
+      this.state === this.states.rotatingDown ||
+      this.state === this.states.rotatingUp
+    )
+  },
+  isSpinning () {
+    return this.state === this.states.rotating
   },
   init (container, camera, amount) {
     this.container = container
@@ -41,9 +68,12 @@ export default {
     })
   },
   onDragDefault ({ movementX }) {
-    if (this.rotation) {
+    console.log('tryspin')
+    if (this.isSpinning() || this.state === this.states.zoomedIn) {
       return
     }
+    this.state = this.states.rotating
+    console.log('start spinning')
     if (movementX > 0) {
       this.rotation = (Math.PI * 2) / this.amount
       return
@@ -53,16 +83,36 @@ export default {
     }
   },
   zoom (event) {
-    if (this.zMove !== 0) {
+    console.log('tryzoom')
+    if (this.isZooming()) {
       return
     }
+    console.log('guard 1')
     if (event.deltaY < 0) {
-      this.zMove = this.amount * 2 - 5
-      this.xRotation = 1
+      console.log('in')
+
+      this.zoomIn()
     } else {
-      this.zMove = -this.amount * 2 + 5
-      this.xRotation = -1
+      console.log('out')
+
+      this.zoomOut()
     }
+  },
+  zoomOut () {
+    if (this.state !== this.states.zoomedIn) {
+      return
+    }
+    this.zMove = -this.amount * 2 + 5
+    this.xRotation = -1
+    this.state = this.states.zoomingOut
+  },
+  zoomIn () {
+    if (this.state !== this.states.zoomedOut) {
+      return
+    }
+    this.zMove = this.amount * 2 - 5
+    this.xRotation = 1
+    this.state = this.states.zoomingIn
   },
   rotateCamera () {
     const maxCameraRotation = 0.25
@@ -74,6 +124,14 @@ export default {
       xRotationThisFrame = -xRotationThisFrame
     }
     this.xRotation -= xRotationThisFrame
+    if (this.xRotation === 0) {
+      if (this.state === this.states.rotatingUp) {
+        this.state = this.states.zoomedIn
+      }
+      if (this.state === this.states.rotatingDown) {
+        this.state = this.states.zoomingOut
+      }
+    }
     this.camera.rotation.x += xRotationThisFrame
     this.camera.position.y -= xRotationThisFrame * 10
   },
@@ -90,6 +148,14 @@ export default {
       zMoveThisFrame = -zMoveThisFrame
     }
     this.zMove -= zMoveThisFrame
+    if (this.zMove === 0) {
+      if (this.state === this.states.zoomingIn) {
+        this.state = this.states.rotatingUp
+      }
+      if (this.state === this.states.zoomingOut) {
+        this.state = this.states.zoomedOut
+      }
+    }
     this.camera.translateZ(-zMoveThisFrame)
   },
   spinCamera () {
@@ -101,6 +167,10 @@ export default {
         roationThisFrame = this.rotation
       }
       this.rotation -= roationThisFrame
+      if (this.rotation === 0) {
+        this.state = this.states.zoomedOut
+      }
+
       this.camera.rotation.y += roationThisFrame
     } else if (this.rotation < 0) {
       roationThisFrame = -maxCameraHorizontalMove
@@ -108,6 +178,9 @@ export default {
         roationThisFrame = this.rotation
       }
       this.rotation -= roationThisFrame
+      if (this.rotation === 0) {
+        this.state = this.states.zoomedOut
+      }
       this.camera.rotation.y += roationThisFrame
     }
   }
