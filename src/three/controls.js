@@ -3,6 +3,7 @@ import PickHelper from '../three/picker.js'
 export default {
   pickPosition: { x: 0, y: 0 },
   pickHelper: new PickHelper(),
+  nodes: null,
   container: null,
   camera: null,
   scene: null,
@@ -24,7 +25,6 @@ export default {
   xRotation: 0,
   setPickPosition (event) {
     const rect = this.container.getBoundingClientRect()
-    console.log(event.clientX - rect.left, this.container.width, rect.width)
     const pos = {
       x: ((event.clientX - rect.left) * rect.width) / rect.width,
       y: ((event.clientY - rect.top) * rect.height) / rect.height
@@ -41,7 +41,7 @@ export default {
     this.pickPosition.y = -100000
   },
   pick () {
-    this.pickHelper.pick(this.pickPosition, this.scene, this.camera)
+    this.pickHelper.pick(this.pickPosition, this.camera, this.nodes)
   },
   getCanvasRelativePosition (event) {
     const rect = this.container.getBoundingClientRect()
@@ -78,11 +78,12 @@ export default {
   isSpinning () {
     return this.state === this.states.rotating
   },
-  init (container, camera, amount, scene) {
+  init (container, camera, amount, scene, nodes) {
     this.container = container
     this.camera = camera
     this.amount = amount
     this.scene = scene
+    this.nodes = nodes
     this.clearPickPosition()
     this.container.addEventListener(
       'touchmove',

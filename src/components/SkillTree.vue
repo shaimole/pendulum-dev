@@ -25,6 +25,7 @@ import * as THREE from 'three'
 import camera from '../three/camera.js'
 import skybox from '../three/skybox.js'
 import controls from '../three/controls.js'
+import Tree from '../three/tree.js'
 
 const amountOfTrees = 30
 export default {
@@ -43,7 +44,57 @@ export default {
       mousedown: false,
       font: null,
       renderer: null,
-      mesh: null
+      mesh: null,
+      nodes: [],
+      skills: [
+        {
+          name: 'Zerstörung',
+          root: {
+            name: 'Zerstörung 1',
+            req: 1,
+            children: [
+              {
+                name: 'Zerstörung 2',
+                req: 3,
+                children: [
+                  {
+                    name: 'Sidegrade 1',
+                    req: 3,
+                    children: []
+                  },
+                  {
+                    name: 'Sidegrade 3',
+                    req: 3,
+                    children: []
+                  },
+                  {
+                    name: 'Zerstörung 3',
+                    req: 6,
+                    children: [
+                      {
+                        name: 'Zerstörung 4',
+                        req: 9,
+                        children: [
+                          {
+                            name: 'Zerstörung 5',
+                            req: 12,
+                            children: []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    name: 'Sidegrade 2',
+                    req: 3,
+                    children: []
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
     }
   },
   methods: {
@@ -80,7 +131,8 @@ export default {
       this.scene.background = texture
     },
     initContent () {
-      for (let i = 0; i !== amountOfTrees; i++) {
+      this.addTreeFromSkill(this.skills[0])
+      for (let i = 0; i !== amountOfTrees - 1; i++) {
         this.addTree(0, 0)
       }
     },
@@ -112,11 +164,43 @@ export default {
         document.getElementById('container'),
         this.camera,
         amountOfTrees,
-        this.scene
+        this.scene,
+        this.nodes
       )
     },
     zoom (event) {
       controls.zoom(event)
+    },
+    addTreeFromSkill (skillTree) {
+      const center = 0
+      const distance = 0
+      const tree = new Tree()
+      tree.registerNode(skillTree.root, 0, 0, new THREE.Vector3(0, 0, 0))
+
+      const group = tree.getGroup()
+      this.nodes = tree.getSpheres()
+      var textGeo = new THREE.TextGeometry(skillTree.name, {
+        font: this.font,
+        size: 2,
+        height: 1,
+        curveSegments: 1,
+        bevelEnabled: true,
+        bevelThickness: 0.02,
+        bevelSize: 0.02,
+        bevelOffset: 0,
+        bevelSegments: 5
+      })
+      const text = new THREE.Mesh(
+        textGeo,
+        new THREE.LineBasicMaterial({ color: 0xffffff })
+      )
+      text.position.copy(new THREE.Vector3(center, -5, distance))
+      text.geometry.center()
+      group.add(text)
+      group.rotation.y = this.currentRotation
+      group.translateZ(-amountOfTrees * 2)
+      this.currentRotation += (Math.PI * 2) / amountOfTrees
+      this.scene.add(group)
     },
     addTree (center, distance) {
       const group = new THREE.Group()
@@ -136,6 +220,7 @@ export default {
         const sphere = new THREE.Mesh(geometry, material)
         group.add(sphere)
         sphere.position.copy(positions[index])
+        this.nodes.push(sphere)
       }
       const material = new THREE.LineBasicMaterial({
         color: 0xfcd097

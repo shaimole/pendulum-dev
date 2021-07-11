@@ -7,25 +7,17 @@ export default class PickHelper {
     this.pickedObjectSavedColor = 0
   }
 
-  pick (normalizedPosition, scene, camera) {
+  pick (normalizedPosition, camera, objects) {
     // restore the color if there is a picked object
     if (this.pickedObject) {
       this.pickedObject.material.color.setHex(this.pickedObjectSavedColor)
       this.pickedObject = undefined
     }
-    console.log(normalizedPosition)
 
     // cast a ray through the frustum
     this.raycaster.setFromCamera(normalizedPosition, camera)
     // get the list of objects the ray intersected
-    const children = []
-    for (const child in scene.children) {
-      const group = scene.children[child].children
-      for (const object in group) {
-        children.push(group[object])
-      }
-    }
-    const intersectedObjects = this.raycaster.intersectObjects(children)
+    const intersectedObjects = this.raycaster.intersectObjects(objects)
     if (intersectedObjects.length) {
       // pick the first object. It's the closest one
       if (intersectedObjects[0].object.type === 'Line') {
@@ -36,7 +28,10 @@ export default class PickHelper {
       // save its color
       this.pickedObjectSavedColor = this.pickedObject.material.color.getHex()
       // set its emissive color to flashing red/yellow
+      document.body.style.cursor = 'pointer'
       this.pickedObject.material.color.setHex(0xfaa333)
+    } else {
+      document.body.style.cursor = 'default'
     }
   }
 }
