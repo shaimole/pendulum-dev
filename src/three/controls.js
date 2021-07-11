@@ -1,6 +1,11 @@
+import PickHelper from '../three/picker.js'
+
 export default {
+  pickPosition: { x: 0, y: 0 },
+  pickHelper: new PickHelper(),
   container: null,
   camera: null,
+  scene: null,
   amount: 0,
   rotation: 0,
   zMove: 0,
@@ -17,8 +22,35 @@ export default {
   },
   currentRotation: 0,
   xRotation: 0,
+  setPickPosition (event) {
+    const rect = this.container.getBoundingClientRect()
+    console.log(event.clientX - rect.left, this.container.width, rect.width)
+    const pos = {
+      x: ((event.clientX - rect.left) * rect.width) / rect.width,
+      y: ((event.clientY - rect.top) * rect.height) / rect.height
+    }
+    this.pickPosition.x = (pos.x / rect.width) * 2 - 1
+    this.pickPosition.y = (pos.y / rect.height) * -2 + 1 // note we flip Y
+  },
+  clearPickPosition () {
+    // unlike the mouse which always has a position
+    // if the user stops touching the screen we want
+    // to stop picking. For now we just pick a value
+    // unlikely to pick something
+    this.pickPosition.x = -100000
+    this.pickPosition.y = -100000
+  },
+  pick () {
+    this.pickHelper.pick(this.pickPosition, this.scene, this.camera)
+  },
+  getCanvasRelativePosition (event) {
+    const rect = this.container.getBoundingClientRect()
+    return {
+      x: ((event.clientX - rect.left) * this.container.width) / rect.width,
+      y: ((event.clientY - rect.top) * this.container.height) / rect.height
+    }
+  },
   updateCamera () {
-    console.log(this.state)
     if (this.isZooming()) {
       this.moveCameraZ()
       return
@@ -46,10 +78,12 @@ export default {
   isSpinning () {
     return this.state === this.states.rotating
   },
-  init (container, camera, amount) {
+  init (container, camera, amount, scene) {
     this.container = container
     this.camera = camera
     this.amount = amount
+    this.scene = scene
+    this.clearPickPosition()
     this.container.addEventListener(
       'touchmove',
       function (event) {
@@ -66,14 +100,33 @@ export default {
     this.container.addEventListener('mouseup', e => {
       this.container.onmousemove = null
     })
+    this.container.addEventListener('mousemove', e => this.setPickPosition(e))
+    this.container.addEventListener('mouseout', e => this.clearPickPosition(e))
+    this.container.addEventListener('mouseleave', e =>
+      this.clearPickPosition(e)
+    )
+
+    this.container.addEventListener(
+      'touchstart',
+      event => {
+        // prevent the window from scrolling
+        event.preventDefault()
+        this.setPickPosition(event.touches[0])
+      },
+      { passive: false }
+    )
+
+    this.container.addEventListener('touchmove', event => {
+      this.setPickPosition(event.touches[0])
+    })
+
+    this.container.addEventListener('touchend', e => this.clearPickPosition(e))
   },
   onDragDefault ({ movementX }) {
-    console.log('tryspin')
     if (this.isSpinning() || this.state === this.states.zoomedIn) {
       return
     }
     this.state = this.states.rotating
-    console.log('start spinning')
     if (movementX > 0) {
       this.rotation = (Math.PI * 2) / this.amount
       return
@@ -83,18 +136,12 @@ export default {
     }
   },
   zoom (event) {
-    console.log('tryzoom')
     if (this.isZooming()) {
       return
     }
-    console.log('guard 1')
     if (event.deltaY < 0) {
-      console.log('in')
-
       this.zoomIn()
     } else {
-      console.log('out')
-
       this.zoomOut()
     }
   },
@@ -104,7 +151,7 @@ export default {
     }
     this.zMove = -this.amount * 2 + 5
     this.xRotation = -1
-    this.state = this.states.zoomingOut
+    this.state = this.states.rotatingDown
   },
   zoomIn () {
     if (this.state !== this.states.zoomedOut) {
@@ -159,7 +206,7 @@ export default {
     this.camera.translateZ(-zMoveThisFrame)
   },
   spinCamera () {
-    const maxCameraHorizontalMove = 0.05
+    const maxCameraHorizontalMove = 0.0125
     let roationThisFrame
     if (this.rotation > 0) {
       roationThisFrame = maxCameraHorizontalMove

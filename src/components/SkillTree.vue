@@ -1,9 +1,11 @@
 <template>
   <div class="flex items-center justify-center">
-    <div class="flex flex-col items-center justify-center">
+    <div
+      class="flex flex-col items-center justify-center p-2 relative border-gradiant"
+    >
       <div
         id="container"
-        class="md:h-160 md:w-160  w-72 h-72 relative"
+        class="md:h-160 md:w-160  w-72 h-72"
         @wheel="zoom($event)"
       >
         <LoadingSpinner v-show="isLoadingFinished !== true" class="loading" />
@@ -86,6 +88,7 @@ export default {
       const container = document.getElementById('container')
       this.renderer = new THREE.WebGLRenderer({ antialias: true })
       this.renderer.setSize(container.clientWidth, container.clientHeight)
+      // border
       const renderScene = new RenderPass(this.scene, this.camera)
 
       const bloomPass = new UnrealBloomPass(
@@ -108,38 +111,12 @@ export default {
       this.controls.init(
         document.getElementById('container'),
         this.camera,
-        amountOfTrees
+        amountOfTrees,
+        this.scene
       )
     },
     zoom (event) {
       controls.zoom(event)
-    },
-    createGeometry (radius) {
-      const geometry = new THREE.BufferGeometry()
-      const vertices = []
-
-      const vertex = new THREE.Vector3()
-
-      for (let i = 0; i < 666; i++) {
-        vertex.x = Math.random() * 2 - 1
-        vertex.y = Math.random() * 2 - 1
-        vertex.z = Math.random() * 2 - 1
-        vertex.normalize()
-        vertex.multiplyScalar(radius)
-
-        vertices.push(vertex.x, vertex.y, vertex.z)
-
-        vertex.multiplyScalar(Math.random() * 0.09 + 1)
-
-        vertices.push(vertex.x, vertex.y, vertex.z)
-      }
-
-      geometry.setAttribute(
-        'position',
-        new THREE.Float32BufferAttribute(vertices, 3)
-      )
-
-      return geometry
     },
     addTree (center, distance) {
       const group = new THREE.Group()
@@ -154,28 +131,15 @@ export default {
         new THREE.Vector3(center, 12, distance)
       ]
       for (const index in positions) {
-        for (const sphere of [
-          { radius: 1, color: 0xffffff, opacity: 0.75, scale: 0.25 },
-          { radius: 1.5, color: 0xfd6e73, opacity: 0.5, scale: 0.25 },
-          { radius: 4, color: 0x986303, opacity: 0.25, scale: 0.1 }
-        ]) {
-          const line = new THREE.LineSegments(
-            this.createGeometry(sphere.radius),
-            new THREE.LineBasicMaterial({
-              color: sphere.color,
-              opacity: sphere.opacity
-            })
-          )
-          line.scale.x = line.scale.y = line.scale.z = sphere.scale
-          line.userData.originalScale = sphere.scale
-          line.rotation.y = Math.random() * Math.PI
-          line.updateMatrix()
-          group.add(line)
-          line.position.copy(positions[index])
-          this.lines.push(line)
-        }
+        const geometry = new THREE.SphereGeometry(0.25, 32, 32)
+        const material = new THREE.MeshBasicMaterial({ color: 0xfcd097 })
+        const sphere = new THREE.Mesh(geometry, material)
+        group.add(sphere)
+        sphere.position.copy(positions[index])
       }
-      const material = new THREE.LineBasicMaterial({ color: 0xcc081d })
+      const material = new THREE.LineBasicMaterial({
+        color: 0xfcd097
+      })
 
       const points = []
       points.push(positions[0])
@@ -197,9 +161,8 @@ export default {
       group.add(line2)
 
       const points3 = []
-      points2.push(positions[2])
-      points2.push(positions[4])
-
+      points3.push(positions[2])
+      points3.push(positions[4])
       const geometry3 = new THREE.BufferGeometry().setFromPoints(points3)
 
       const line3 = new THREE.Line(geometry3, material)
@@ -235,12 +198,10 @@ export default {
     },
     animate: function () {
       requestAnimationFrame(this.animate)
-      for (const line of this.lines) {
-        line.rotation.y += 0.005
-      }
       if (!this.isLoadingFinished) {
         return
       }
+      this.controls.pick()
       this.controls.updateCamera()
       this.composer.render()
     }
@@ -257,5 +218,9 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+.border-gradiant {
+  background: linear-gradient(to top, #f48c06, #ffd66e);
+  border-radius: 1em;
 }
 </style>
