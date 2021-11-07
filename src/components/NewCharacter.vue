@@ -1,95 +1,34 @@
 <template>
-  <div class="border-one">
-    <b-modal
-      id="characterCreation"
-      size="lg"
-      content-class="ccContent border-one"
-      @hide="step = 0"
-      centered
-      hide-footer
-      :hide-header="true"
+  <div class="flex flex-col items-center ">
+    <div
+      class="border-california-200 border-2 bg-guardsman-red-800 rounded-lg mb-3 mx-2 text-trinidad-500"
     >
-      <div v-if="step === 0" class="fade">
-        <GenderSelection />
-        <div :class="isNextEnabled">
-          <b-button :class="isNextEnabled" block @click="step = 1"
-            >Weiter</b-button
-          >
-        </div>
+      <component :is="getComponentForStep()"></component>
+      {{ isNextEnabled() }}
+      <div class="flex justify-between space-x-10 px-5 py-2">
+        <button
+          :class="getBackButtonClass()"
+          :disabled="!isBackEnabled()"
+          @click="step--"
+        >
+          Zurück
+        </button>
+        <button
+          :class="getContinueButtonClass()"
+          :disabled="!isNextEnabled()"
+          @click="step++"
+        >
+          {{ getNextName() }}
+        </button>
       </div>
-      <div v-if="step === 1" class="fade">
-        <Name />
-        <div :class="isNextEnabled">
-          <b-button :class="isNextEnabled" block @click="step = 2"
-            >Weiter</b-button
-          >
-        </div>
-      </div>
-      <div v-if="step === 2" class="fade">
-        <div :class="isNextEnabled">
-          <b-button :class="isNextEnabled" block @click="step = 3"
-            >Weiter</b-button
-          >
-        </div>
-        <RaceSelection />
-      </div>
-      <div v-if="step === 3" class="fade">
-        <div :class="isNextEnabled">
-          <b-button :class="isNextEnabled" block @click="step = 4"
-            >Weiter</b-button
-          >
-        </div>
-        <ClassSelection />
-      </div>
-      <div v-if="step === 4" class="fade">
-        <CharPortaits />
-        <div :class="isNextEnabled">
-          <b-button
-            :class="isNextEnabled"
-            block
-            @click="
-              step = 5
-              saveCharacter()
-            "
-            >Weiter</b-button
-          >
-        </div>
-      </div>
-      <div v-if="step === 5" class="fade">
-        <Attributes />
-        <div :class="isNextEnabled">
-          <b-button
-            :class="isNextEnabled"
-            block
-            @click="
-              $emit('togglecards')
-              finalize($bvModal)
-            "
-            >{{ getNextName }}</b-button
-          >
-        </div>
-      </div>
-      <div v-if="step === 6" class="fade">
-        <h1>Zusatzpunkte Mensch</h1>
-        <Attributes noCreate :addAttrPoints="3" />
-        <div :class="isNextEnabled">
-          <b-button
-            :class="isNextEnabled"
-            block
-            @click="
-              $emit('togglecards')
-              finalize($bvModal)
-            "
-            >{{ getNextName }}</b-button
-          >
-        </div>
-      </div>
-    </b-modal>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+const buttonClasses =
+  'bg-guardsman-red-900 text-sm hover:border-tahiti-gold-500 border-2 border-california-200 font-bold py-2 px-4 rounded  transition-opacity duration-1000 ease-in-out'
 export default {
   data: function () {
     return {
@@ -97,6 +36,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['getChar', 'getTotalAttributesCost'])
+  },
+  methods: {
     getNextName () {
       if (this.getChar.race === 'human' && this.step !== 6) {
         return 'Weiter'
@@ -104,48 +46,64 @@ export default {
         return 'Speichern'
       }
     },
-    ...mapGetters(['getChar', 'getTotalAttributesCost']),
+    getContinueButtonClass () {
+      if (!this.isNextEnabled()) {
+        return buttonClasses + ' disabled'
+      }
+      return buttonClasses + ' enabled'
+    },
+    getBackButtonClass () {
+      if (!this.isBackEnabled()) {
+        return buttonClasses + ' disabled'
+      }
+      return buttonClasses + ' enabled'
+    },
+    isBackEnabled () {
+      return this.step > 0
+    },
     isNextEnabled () {
-      const classes = ['collapsed', 'trans']
       switch (this.step) {
         case 0:
-          if (this.getChar.gender) {
-            classes.shift()
-          }
-          break
+          return this.getChar.gender
         case 1:
-          if (this.getChar.name) {
-            classes.shift()
-          }
-          break
+          return this.getChar.name
         case 3:
-          if (this.getChar.gender) {
-            classes.shift()
-          }
-          break
+          return this.getChar.gender
         case 5:
-          if (this.getTotalAttributesCost === 80) {
-            classes.shift()
-          }
-          break
+          return this.getTotalAttributesCost === 80
         default:
-          classes.shift()
-          break
+          return true
       }
-      return classes
-    }
-  },
-  methods: {
-    ...mapActions(['createNewCharacter', 'saveCharacter', 'checkName']),
-    finalize (modal) {
-      if (this.getChar.race !== 'human' || this.step === 6) {
-        modal.hide('characterCreation')
-        this.step = 0
-        this.saveCharacter()
-      } else {
-        this.step = 6
+    },
+    getComponentForStep () {
+      switch (this.step) {
+        case 0:
+          return 'GenderSelection'
+        case 1:
+          return 'Name'
+        case 2:
+          return 'RaceSelection'
+        case 3:
+          return 'ClassSelection'
+        case 4:
+          return 'CharPortaits'
+        case 5:
+          return 'Attributes'
+        case 6:
+          return 'Attributes'
+        default:
+          return 'Attributes'
       }
-    }
+    },
+    ...mapActions(['createNewCharacter', 'saveCharacter', 'checkName'])
   }
 }
 </script>
+<style scoped>
+.disabled {
+  opacity: 0.5;
+}
+.enabled {
+  opacity: 1;
+}
+</style>

@@ -1,8 +1,8 @@
 <template>
   <div
-    class="bg-black-pearl flex-grow text-california-200 flex flex-col lg:flex-row justify-center lg:space-x-32 space-y-10 items-center"
+    class="bg-black-pearl flex-grow text-california-200 flex flex-col lg:flex-row justify-start lg:justify-center mt-10 lg:space-x-32 space-y-4 items-center"
   >
-    <div class=" w-72 text text-california-600">
+    <div class="w-72 text text-california-600 ">
       <PendulumLogo />
     </div>
     <LoginForm />

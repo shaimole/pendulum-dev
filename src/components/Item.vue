@@ -1,31 +1,47 @@
 <template>
-<div v-if="item">
-    <div >
-      <h5>{{item.name}} <font-awesome-icon :icon="iconMappings[item.slot].icon" /></h5>
-      <p>{{ item.desc }} <font-awesome-icon v-b-toggle="item.name.replace(/\s+/g, '-').toLowerCase() + 'edit'" icon="cog" /></p>
+  <div v-if="item">
+    <div>
+      <h5>
+        {{ item.name }}
+        <font-awesome-icon :icon="iconMappings[item.slot].icon" />
+      </h5>
+      <p>
+        {{ item.desc }}
+        <font-awesome-icon
+          v-b-toggle="item.name.replace(/\s+/g, '-').toLowerCase() + 'edit'"
+          icon="cog"
+        />
+      </p>
     </div>
-    <b-sidebar :id="item.name.replace(/\s+/g, '-').toLowerCase() + 'edit'" title="Gegenstand bearbeiten" bg-variant="dark"  text-variant="light" shadow>
-        <div class="px-3 py-2">
-            <EditItem :item="item" :inventory="inventory" :equipped="equipped"/>
-    </div>
+    <b-sidebar
+      v-model="sidebarToggle"
+      :id="item.name.replace(/\s+/g, '-').toLowerCase() + 'edit'"
+      title="Gegenstand bearbeiten"
+      bg-variant="dark"
+      text-variant="light"
+      shadow
+    >
+      <div class="px-3 py-2">
+        <EditItem
+          v-if="sidebarToggle"
+          :item="item"
+          :inventory="inventory"
+          :equipped="equipped"
+        />
+      </div>
     </b-sidebar>
-</div>
+  </div>
 </template>
 <script>
-import { mapGetters } from 'vuex'
 export default {
   props: {
     item: Object,
     inventory: Object,
     equipped: Boolean
   },
-  computed: {
-    ...mapGetters([
-      'getChar'
-    ])
-  },
   data () {
     return {
+      sidebarToggle: false,
       iconMappings: {
         Waffe: {
           id: 'weapon',
@@ -82,7 +98,7 @@ export default {
 </script>
 <style scoped>
 svg {
-  float:right;
+  float: right;
 }
 .settings:hover {
   cursor: pointer;

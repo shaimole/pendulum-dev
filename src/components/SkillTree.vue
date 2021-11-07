@@ -1,8 +1,6 @@
 <template>
   <div class="flex items-center justify-center">
-    <div
-      class="flex flex-col items-center justify-center p-2 relative border-gradiant"
-    >
+    <div class="flex flex-col items-center justify-center p-2 relative">
       <div
         id="container"
         class="md:h-160 md:w-160  w-72 h-72"
@@ -19,15 +17,13 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
 
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
 
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
 import robotoRegular from '../assets/fonts/Roboto_Regular.json'
 import * as THREE from 'three'
 import camera from '../three/camera.js'
-import skybox from '../three/skybox.js'
 import controls from '../three/controls.js'
 import Tree from '../three/tree.js'
 
-const amountOfTrees = 30
+const amountOfTrees = 10
 export default {
   name: 'SkillTree',
   data () {
@@ -102,10 +98,10 @@ export default {
       this.initFont()
       this.initCamera()
       this.initScene()
-      this.initSkybox()
       this.initContent()
       this.initRenderer()
       this.initControls()
+      this.isLoadingFinished = true
     },
     initFont () {
       this.font = new THREE.FontLoader().parse(robotoRegular)
@@ -118,18 +114,6 @@ export default {
     initScene () {
       this.scene = new THREE.Scene(0)
     },
-    initSkybox () {
-      const loader = new THREE.CubeTextureLoader()
-      const texture = loader.load(
-        skybox.textures,
-        () => {
-          setTimeout(() => (this.isLoadingFinished = true), 500)
-        },
-        error => console.log(error)
-      )
-
-      this.scene.background = texture
-    },
     initContent () {
       this.addTreeFromSkill(this.skills[0])
       for (let i = 0; i !== amountOfTrees - 1; i++) {
@@ -138,24 +122,13 @@ export default {
     },
     initRenderer () {
       const container = document.getElementById('container')
-      this.renderer = new THREE.WebGLRenderer({ antialias: true })
+      this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
       this.renderer.setSize(container.clientWidth, container.clientHeight)
-      // border
+      this.renderer.setClearColor(0x000000, 0)
+      this.scene.background = null
       const renderScene = new RenderPass(this.scene, this.camera)
-
-      const bloomPass = new UnrealBloomPass(
-        new THREE.Vector2(window.innerWidth, window.innerHeight),
-        1.5,
-        0.4,
-        0.85
-      )
-      bloomPass.threshold = 0.2
-      bloomPass.strength = 1
-      bloomPass.radius = 0.7
-
       this.composer = new EffectComposer(this.renderer)
       this.composer.addPass(renderScene)
-      this.composer.addPass(bloomPass)
       container.appendChild(this.renderer.domElement)
     },
     initControls () {
@@ -192,7 +165,7 @@ export default {
       })
       const text = new THREE.Mesh(
         textGeo,
-        new THREE.LineBasicMaterial({ color: 0xffffff })
+        new THREE.LineBasicMaterial({ color: 0x000000 })
       )
       text.position.copy(new THREE.Vector3(center, -5, distance))
       text.geometry.center()
@@ -266,7 +239,7 @@ export default {
       })
       const text = new THREE.Mesh(
         textGeo,
-        new THREE.LineBasicMaterial({ color: 0xffffff })
+        new THREE.LineBasicMaterial({ color: 0x000000 })
       )
       text.position.copy(new THREE.Vector3(center, -5, distance))
       text.geometry.center()

@@ -75,18 +75,18 @@
           v-model="terms"
         />
         <label
-          class=" text-grey-darker text-sm font-bold"
+          class=" text-grey-darker text-xs font-bold"
           for="passwordConfirm"
         >
           Accept privacy policy and terms
         </label>
       </div>
-      <p class="text-red text-xs italic mb-2">{{ error.terms }}</p>
+      <p class="text-red text-xs italic mb-2 max-w-sm">{{ error.terms }}</p>
       <div class="flex items-center justify-between space-x-5">
         <button
           type="submit"
           value="Submit"
-          class="bg-black-pearl-500 hover:bg-grenadier-700 font-bold py-2 px-4 rounded"
+          class="bg-guardsman-red-900 text-sm hover:border-tahiti-gold-500 border-2 border-california-200 font-bold py-2 px-4 rounded"
         >
           Register
         </button>
@@ -108,11 +108,11 @@ const apiUrl = 'http://localhost:4000/user/'
 export default {
   data () {
     return {
-      username: 'x',
-      email: 'x@x.x',
-      password: 'xxxxxxxx',
-      confirmPassword: 'xxxxxxxx',
-      terms: true,
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      terms: false,
       error: {
         password: '',
         confirmPassword: '',

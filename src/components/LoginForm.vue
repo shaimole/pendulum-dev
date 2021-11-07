@@ -5,7 +5,7 @@
     <form @submit="checkForm">
       <div class="mb-4">
         <label
-          class="block text-grey-darker text-sm font-bold mb-2"
+          class="block text-grey-darker text-xs font-bold mb-2"
           for="username"
         >
           Username/E-Mail
@@ -21,7 +21,7 @@
       </div>
       <div class="mb-6">
         <label
-          class="block text-grey-darker text-sm font-bold mb-2"
+          class="block text-grey-darker text-xs font-bold mb-2"
           for="password"
         >
           Password
@@ -39,11 +39,11 @@
         <button
           type="submit"
           value="Submit"
-          class="bg-black-pearl-500 hover:bg-grenadier-700 font-bold py-2 px-4 rounded"
+          class="bg-guardsman-red-900 text-sm hover:border-tahiti-gold-500 border-2 border-california-200 font-bold py-2 px-4 rounded"
         >
-          Sign In
+          Login
         </button>
-        <a class="font-bold text-sm hover:text-grenadier text-center" href="#">
+        <a class="font-bold text-xs hover:text-grenadier text-center" href="#">
           Forgot Password?
         </a>
       </div>
