@@ -1,26 +1,26 @@
 export default {
-  getCharacters: (state) => {
+  getCharacters: state => {
     return state.characters
   },
-  getCharAttributes: (state) => {
+  getCharAttributes: state => {
     return state.character.attributes
   },
-  getChar: (state) => {
+  getChar: state => {
     return state.character
   },
-  getCharName: (state) => {
+  getCharName: state => {
     return state.character.name
   },
-  getCharLevel: (state) => {
+  getCharLevel: state => {
     return state.character.level
   },
-  getRaces: (state) => {
+  getRaces: state => {
     return state.races
   },
-  getClasses: (state) => {
+  getClasses: state => {
     return state.classes
   },
-  getAttributes: (state) => {
+  getAttributes: state => {
     const attribs = state.attributes
     const charAttribs = state.character.attributes
     for (let i = 0; i < attribs.length; i++) {
@@ -54,21 +54,27 @@ export default {
 
     const charTraitNames = state.character.traits
     for (const index in charTraitNames) {
-      const trait = state.positiveTraits.find(element => element.name === charTraitNames[index])
+      const trait = state.positiveTraits.find(
+        element => element.name === charTraitNames[index]
+      )
       if (trait) {
         total += trait.cost
       }
     }
 
     for (const index in charTraitNames) {
-      const trait = state.neutralTraits.find(element => element.name === charTraitNames[index])
+      const trait = state.neutralTraits.find(
+        element => element.name === charTraitNames[index]
+      )
       if (trait) {
         total += trait.cost
       }
     }
 
     for (const index in charTraitNames) {
-      const trait = state.negativeTraits.find(element => element.name === charTraitNames[index])
+      const trait = state.negativeTraits.find(
+        element => element.name === charTraitNames[index]
+      )
       if (trait) {
         total += trait.cost
       }
@@ -81,32 +87,44 @@ export default {
   getSkills (state) {
     const skills = state.skills
     const attributes = state.character.attributes
-    return floorValues(alterStats(state, getStats(skills, attributes), 'skills'))
+    return floorValues(
+      alterStats(state, getStats(skills, attributes), 'skills')
+    )
   },
   getAttackStats (state) {
     const skills = state.attackStats
     const attributes = state.character.attributes
-    return floorValues(alterStats(state, getStats(skills, attributes), 'attack'))
+    return floorValues(
+      alterStats(state, getStats(skills, attributes), 'attack')
+    )
   },
   getDefenseStats (state) {
     const skills = state.defenseStats
     const attributes = state.character.attributes
-    return floorValues(alterStats(state, getStats(skills, attributes), 'defense'))
+    return floorValues(
+      alterStats(state, getStats(skills, attributes), 'defense')
+    )
   },
   getCasterStats (state) {
     const skills = state.casterStats
     const attributes = state.character.attributes
-    return floorValues(alterStats(state, getStats(skills, attributes), 'caster'))
+    return floorValues(
+      alterStats(state, getStats(skills, attributes), 'caster')
+    )
   },
   getDamageStats (state) {
     const skills = state.damageStats
     const attributes = state.character.attributes
-    return floorValues(alterStats(state, getStats(skills, attributes), 'damage'))
+    return floorValues(
+      alterStats(state, getStats(skills, attributes), 'damage')
+    )
   },
   getExternalStats (state) {
     const skills = state.externalStats
     const attributes = state.character.attributes
-    return floorValues(alterStats(state, getStats(skills, attributes), 'external'))
+    return floorValues(
+      alterStats(state, getStats(skills, attributes), 'external')
+    )
   },
   getHpStats (state) {
     let skills = []
@@ -118,8 +136,7 @@ export default {
     const attributes = state.character.attributes
     let stats = getStats(skills, attributes)
     stats = alterStats(state, stats, 'hp')
-    let lpReg =
-    [
+    let lpReg = [
       {
         id: 'LPReg',
         index: 2,
@@ -161,21 +178,27 @@ export default {
     }
     const charTraitNames = state.character.traits
     for (const index in charTraitNames) {
-      const trait = state.positiveTraits.find(element => element.name === charTraitNames[index])
+      const trait = state.positiveTraits.find(
+        element => element.name === charTraitNames[index]
+      )
       if (trait) {
         charTraits.positive.push(trait)
       }
     }
 
     for (const index in charTraitNames) {
-      const trait = state.neutralTraits.find(element => element.name === charTraitNames[index])
+      const trait = state.neutralTraits.find(
+        element => element.name === charTraitNames[index]
+      )
       if (trait) {
         charTraits.neutral.push(trait)
       }
     }
 
     for (const index in charTraitNames) {
-      const trait = state.negativeTraits.find(element => element.name === charTraitNames[index])
+      const trait = state.negativeTraits.find(
+        element => element.name === charTraitNames[index]
+      )
       if (trait) {
         charTraits.negative.push(trait)
       }
@@ -197,7 +220,9 @@ export default {
   }
 }
 function getConditions (state) {
-  const passiveItems = state.character.inventory.find(element => element.name === 'Passives').items
+  const passiveItems = state.character.inventory.find(
+    element => element.name === 'Passives'
+  ).items
   const itemsContainers = [state.character.equipped, passiveItems]
   for (const index in itemsContainers) {
     for (const index2 in itemsContainers[index]) {
@@ -205,7 +230,10 @@ function getConditions (state) {
       if (!item) {
         continue
       }
-      if (item.condition && !state.conditions.find(element => element.id === item.condition)) {
+      if (
+        item.condition &&
+        !state.conditions.find(element => element.id === item.condition)
+      ) {
         state.conditions.push({ id: item.condition, active: false })
       }
     }
@@ -228,7 +256,12 @@ function getStats (skills, attributes) {
   for (const skill in skills) {
     let value = getValueForParts(skills[skill].parts, skills, skill, attributes)
     if (skills[skill].altparts) {
-      const altValue = getValueForParts(skills[skill].altparts, skills, skill, attributes)
+      const altValue = getValueForParts(
+        skills[skill].altparts,
+        skills,
+        skill,
+        attributes
+      )
       if (altValue > value) {
         value = altValue
       }
@@ -262,11 +295,21 @@ function alterStats (state, stats, type) {
     let mod = 0
     let multi = 1
     let mods = []
-    const passiveItems = state.character.inventory.find(element => element.name === 'Passives').items
+    const passiveItems = state.character.inventory.find(
+      element => element.name === 'Passives'
+    ).items
     const itemsContainers = [state.character.equipped, passiveItems]
 
     for (const index in itemsContainers) {
-      const modifiers = getItemStatModifiers(itemsContainers[index], stats[stat].id, type, mod, multi, mods, conditions)
+      const modifiers = getItemStatModifiers(
+        itemsContainers[index],
+        stats[stat].id,
+        type,
+        mod,
+        multi,
+        mods,
+        conditions
+      )
       mods = modifiers.mods
       multi = modifiers.multi
       mod = modifiers.mod
@@ -278,7 +321,15 @@ function alterStats (state, stats, type) {
   return stats
 }
 
-function getItemStatModifiers (items, statId, type, mod, multi, mods, conditions) {
+function getItemStatModifiers (
+  items,
+  statId,
+  type,
+  mod,
+  multi,
+  mods,
+  conditions
+) {
   for (const item in items) {
     if (!items[item]) {
       continue
@@ -303,7 +354,11 @@ function getItemStatModifiers (items, statId, type, mod, multi, mods, conditions
     const modItem = items[item].modifiers[type][statId]
     mod += modItem.mod
     multi += modItem.multi
-    mods.push({ item: items[item].name, mod: modItem.mod, multi: modItem.multi })
+    mods.push({
+      item: items[item].name,
+      mod: modItem.mod,
+      multi: modItem.multi
+    })
   }
   return { mod: mod, multi: multi, mods: mods }
 }
